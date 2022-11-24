@@ -64,18 +64,32 @@ void ChessBoard::initializeBoard() {
     board[0][6] = WHITE_KNIGHT;
     board[0][7] = WHITE_ROOK;
 
+
      for (int i = 2; i < 6; i++) {
         for (int j = 0; j < 8; j++) {
             board[i][j] = ".";
         }
     }
-
+   
+    // print board
+    int z = 8;
     for (int i = 0; i < 8; i++) {
+        cout << z << " ";
         for (int j = 0; j < 8; j++) {
-           cout << board[i][j] << " ";
+           cout << board[i][j] << "  ";
         }
+        z--;
         cout << endl;
     }
+     // print letter headers
+     cout << "  ";
+    for (int i = 65; i < 73; i++) {
+        cout << (char)i;
+        if(i != 104) {
+            cout << "  ";
+        }
+    }
+    cout << endl;
 }
 
 void ChessBoard::movePiece(string start, string end) {
