@@ -2,10 +2,14 @@ CXX = clang++
 CXXFLAGS = -g3 -Wall -Wextra -Wpedantic -Wshadow
 LDFLAGS  = -g3 
 
+output: main.o chessBoard.o
+	$(CXX) $(CXXFLAGS) main.o chessBoard.o -o output
 
+main.o: main.cpp 
+	$(CXX) $(CXXFLAGS) -c main.cpp
 
-main.o: main.cpp chessBoard.h chessBoard.cpp
-	$(CXX) $(CXXFLAGS) -o $@ main.cpp chessBoard.cpp
+ chessBoard.o: chessBoard.cpp chessBoard.h
+	$(CXX) $(CXXFLAGS) -c chessBoard.cpp
 
 
 
@@ -13,4 +17,4 @@ main.o: main.cpp chessBoard.h chessBoard.cpp
 # remove executables and object code from the current folder -- the 
 # executable created by unit_test is called a.out
 clean: 
-	rm *.o
+	rm *.o output

@@ -5,6 +5,7 @@ class ChessBoard {
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
+        void movePiece(std::string start, std::string end);
     private:
     std::string board[8][8];
 };

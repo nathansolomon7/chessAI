@@ -76,8 +76,13 @@ void ChessBoard::initializeBoard() {
         }
         cout << endl;
     }
-
-
 }
+
+void ChessBoard::movePiece(string start, string end) {
+    string currPiece = board[(int)(start[0] - 97)][(int)start[1]];
+    board[(int)(end[0] - 97)][(int)end[1]] = currPiece;
+    return;
+}
+
 
 
