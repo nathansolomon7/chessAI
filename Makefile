@@ -1,6 +1,5 @@
-CXX = clang++
-CXXFLAGS = -g3 -Wall -Wextra -Wpedantic -Wshadow
-LDFLAGS  = -g3 
+CXX = g++
+CXXFLAGS = -Wall -Wextra -Werror
 
 output: main.o chessBoard.o
 	$(CXX) $(CXXFLAGS) main.o chessBoard.o -o output

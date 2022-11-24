@@ -18,6 +18,7 @@ string BLACK_BISHOP	= "\u265D";
 string BLACK_KNIGHT	= "\u265E";
 string BLACK_PAWN	= "\u265F";	
 
+int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
  ChessBoard::ChessBoard(){
     
 }
@@ -72,6 +73,44 @@ void ChessBoard::initializeBoard() {
     }
    
     // print board
+    printBoard();
+}
+
+int ChessBoard::getColCoord(char letter) {
+    letter = tolower(letter);
+    cout << "col coordinate: " << letter - 97 << endl;
+    return letter - 97;
+}
+
+int ChessBoard::getRowCoord(char number) {
+    // input to board mapping
+    int num = (int)(number - 48);
+    // cout << "row coordinate: " << num << endl;
+    // cout << "maps to " << rowNumtoBoard[num] << " in 2d array" << endl;
+    return rowNumtoBoard[num];
+}
+
+
+void ChessBoard::getPosition(string currCoord, int* positionArr) {
+    
+    positionArr[0] = getRowCoord(currCoord[1]);
+    positionArr[1] = getColCoord(currCoord[0]);
+}
+
+void ChessBoard::movePiece(string start, string end) {
+   int currPosition[2];
+   int nextPosition[2];
+   getPosition(start, currPosition);
+   getPosition(end, nextPosition);
+   // piece we are trying to move
+   string currPiece = board[currPosition[0]][currPosition[1]];
+   // replace piece with empty space, as you have just moved it
+   board[currPosition[0]][currPosition[1]] = ".";
+   // move the piece we are trying to move to its new location
+   board[nextPosition[0]][nextPosition[1]] = currPiece;
+}
+
+void ChessBoard::printBoard() {
     int z = 8;
     for (int i = 0; i < 8; i++) {
         cout << z << " ";
@@ -92,11 +131,10 @@ void ChessBoard::initializeBoard() {
     cout << endl;
 }
 
-void ChessBoard::movePiece(string start, string end) {
-    string currPiece = board[(int)(start[0] - 97)][(int)start[1]];
-    board[(int)(end[0] - 97)][(int)end[1]] = currPiece;
-    return;
-}
+
+
+
+
 
 
 
