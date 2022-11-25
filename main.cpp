@@ -19,7 +19,9 @@ int main() {
         }
         cin >> prevMove >> nextMove;
         cout << prevMove << " -> " << nextMove << endl;
-        Board.movePiece(prevMove, nextMove);
+        if (!Board.movePiece(prevMove, nextMove)) {
+            continue;
+        }
         Board.printBoard();
         turn++;
     }
