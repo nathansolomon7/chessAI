@@ -19,7 +19,14 @@ string WHITE_KNIGHT	= "\u265E";
 string WHITE_PAWN	= "\u265F";	
 int WHITE = 1;
 int BLACK = 0;
-
+enum {
+    ROOK = 0,
+    KNIGHT,
+    BISHOP,
+    KING,
+    QUEEN,
+    PAWN
+};
 
 int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
  ChessBoard::ChessBoard(){
@@ -32,41 +39,41 @@ int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
 
 void ChessBoard::initializeBoard() {
     // intialize white pieces
-    board[7][0] = initializePiece(WHITE_ROOK, 5, 1);
-    board[7][1] = initializePiece(WHITE_KNIGHT, 3, 1);
-    board[7][2] = initializePiece(WHITE_BISHOP, 3, 1);
-    board[7][3] = initializePiece(WHITE_QUEEN, 9, 1);
-    board[7][4] = initializePiece(WHITE_KING, 90, 1);
-    board[7][5] = initializePiece(WHITE_BISHOP, 3, 1);
-    board[7][6] = initializePiece(WHITE_KNIGHT, 3, 1);
-    board[7][7] = initializePiece(WHITE_ROOK, 5, 1);
+    board[7][0] = initializePiece(WHITE_ROOK, 5, 1, ROOK);
+    board[7][1] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT);
+    board[7][2] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP);
+    board[7][3] = initializePiece(WHITE_QUEEN, 9, 1, QUEEN);
+    board[7][4] = initializePiece(WHITE_KING, 90, 1, KING);
+    board[7][5] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP);
+    board[7][6] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT);
+    board[7][7] = initializePiece(WHITE_ROOK, 5, 1, ROOK);
     // intialize white pawns
-    board[6][0] = initializePiece(WHITE_PAWN, 1, 1);
-    board[6][1] = initializePiece(WHITE_PAWN, 1, 1);
-    board[6][2] = initializePiece(WHITE_PAWN, 1, 1);
-    board[6][3] = initializePiece(WHITE_PAWN, 1, 1);
-    board[6][4] = initializePiece(WHITE_PAWN, 1, 1);
-    board[6][5] = initializePiece(WHITE_PAWN, 1, 1);
-    board[6][6] = initializePiece(WHITE_PAWN, 1, 1);
-    board[6][7] = initializePiece(WHITE_PAWN, 1, 1);
+    board[6][0] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
+    board[6][1] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
+    board[6][2] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
+    board[6][3] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
+    board[6][4] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
+    board[6][5] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
+    board[6][6] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
+    board[6][7] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
     // intialize black pawns
-    board[1][0] = initializePiece(BLACK_PAWN, -1, 0);
-    board[1][1] = initializePiece(BLACK_PAWN, -1, 0);
-    board[1][2] = initializePiece(BLACK_PAWN, -1, 0);
-    board[1][3] = initializePiece(BLACK_PAWN, -1, 0);
-    board[1][4] = initializePiece(BLACK_PAWN, -1, 0);
-    board[1][5] =initializePiece(BLACK_PAWN, -1, 0);
-    board[1][6] = initializePiece(BLACK_PAWN, -1, 0);
-    board[1][7] = initializePiece(BLACK_PAWN, -1, 0);
+    board[1][0] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
+    board[1][1] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
+    board[1][2] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
+    board[1][3] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
+    board[1][4] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
+    board[1][5] = initializePiece(BLACK_PAWN, -1, 0,PAWN);
+    board[1][6] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
+    board[1][7] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
      // intialize black pieces
-    board[0][0] = initializePiece(BLACK_ROOK, -5, 0);
-    board[0][1] = initializePiece(BLACK_KNIGHT, -3, 0);
-    board[0][2] = initializePiece(BLACK_BISHOP, -3, 0);
-    board[0][3] = initializePiece(BLACK_QUEEN, -9, 0);
-    board[0][4] = initializePiece(BLACK_KING, -90, 0);
-    board[0][5] = initializePiece(BLACK_BISHOP, -3, 0);
-    board[0][6] = initializePiece(BLACK_KNIGHT, -3, 0);
-    board[0][7] = initializePiece(BLACK_ROOK, -5, 0);
+    board[0][0] = initializePiece(BLACK_ROOK, -5, 0, ROOK);
+    board[0][1] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT);
+    board[0][2] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP);
+    board[0][3] = initializePiece(BLACK_QUEEN, -9, 0, QUEEN);
+    board[0][4] = initializePiece(BLACK_KING, -90, 0, KING);
+    board[0][5] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP);
+    board[0][6] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT);
+    board[0][7] = initializePiece(BLACK_ROOK, -5, 0, ROOK);
 
 
      for (int i = 2; i < 6; i++) {
@@ -150,11 +157,12 @@ void ChessBoard::printBoard() {
     cout << endl;
 }
 
-Piece ChessBoard::initializePiece(string symbol, int value, int color) {
+Piece ChessBoard::initializePiece(string symbol, int value, int color, int pieceType) {
     Piece newPiece;
     newPiece.symbol = symbol;
     newPiece.value = value;
     newPiece.color = color;
+    newPiece.PieceType = pieceType;
     return newPiece;
 }
 

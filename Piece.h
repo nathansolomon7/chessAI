@@ -9,7 +9,7 @@ class Piece {
             int color;
             int PieceType;
             // generate moves for this specific piece
-            Piece initializePiece(std::string symbol, int value, int color);
+            // Piece initializePiece(std::string symbol, int value, int color, int pieceType);
 
     private:
     
