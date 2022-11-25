@@ -7,7 +7,7 @@ class Piece {
             std::string symbol;
             int value;
             int color;
-
+            // generate moves for this specific piece
 
     private:
     
