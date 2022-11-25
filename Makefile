@@ -1,14 +1,18 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror
 
-output: main.o chessBoard.o
-	$(CXX) $(CXXFLAGS) main.o chessBoard.o -o output
+output: main.o chessBoard.o Piece.o
+	$(CXX) $(CXXFLAGS) main.o chessBoard.o Piece.o -o output
 
 main.o: main.cpp 
 	$(CXX) $(CXXFLAGS) -c main.cpp
 
  chessBoard.o: chessBoard.cpp chessBoard.h
 	$(CXX) $(CXXFLAGS) -c chessBoard.cpp
+
+Piece.o: Piece.cpp Piece.h
+	$(CXX) $(CXXFLAGS) -c Piece.cpp
+
 
 
 
