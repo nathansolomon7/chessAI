@@ -71,14 +71,11 @@ void ChessBoard::initializeBoard() {
             board[i][j] = ".";
         }
     }
-   
-    // print board
-    printBoard();
 }
 
 int ChessBoard::getColCoord(char letter) {
     letter = tolower(letter);
-    cout << "col coordinate: " << letter - 97 << endl;
+    // cout << "col coordinate: " << letter - 97 << endl;
     return letter - 97;
 }
 
@@ -112,6 +109,7 @@ void ChessBoard::movePiece(string start, string end) {
 
 void ChessBoard::printBoard() {
     int z = 8;
+    cout << endl;
     for (int i = 0; i < 8; i++) {
         cout << z << " ";
         for (int j = 0; j < 8; j++) {
