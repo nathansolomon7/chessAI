@@ -1,5 +1,6 @@
 #include <iostream>
 #include "chessBoard.h"
+#include <string>
 using namespace std;
 
 int main() {

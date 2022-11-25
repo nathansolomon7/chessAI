@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include "chessBoard.h"
 using namespace std;
 
@@ -18,6 +17,8 @@ string BLACK_BISHOP	= "\u265D";
 string BLACK_KNIGHT	= "\u265E";
 string BLACK_PAWN	= "\u265F";	
 
+
+
 int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
  ChessBoard::ChessBoard(){
     
@@ -29,46 +30,46 @@ int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
 
 void ChessBoard::initializeBoard() {
     // intialize white pieces
-    board[7][0] = WHITE_ROOK;
-    board[7][1] = WHITE_KNIGHT;
-    board[7][2] = WHITE_BISHOP;
-    board[7][3] = WHITE_QUEEN;
-    board[7][4] = WHITE_KING;
-    board[7][5] = WHITE_BISHOP;
-    board[7][6] = WHITE_KNIGHT;
-    board[7][7] = WHITE_ROOK;
+    board[7][0] = intializePiece(WHITE_ROOK, 5);
+    board[7][1] = intializePiece(WHITE_KNIGHT, 3);
+    board[7][2] = intializePiece(WHITE_BISHOP, 3);
+    board[7][3] = intializePiece(WHITE_QUEEN, 9);
+    board[7][4] = intializePiece(WHITE_KING, -1);
+    board[7][5] = intializePiece(WHITE_BISHOP, 3);
+    board[7][6] = intializePiece(WHITE_KNIGHT, 3);
+    board[7][7] = intializePiece(WHITE_ROOK, 5);
     // intialize white pawns
-    board[6][0] = WHITE_PAWN;
-    board[6][1] = WHITE_PAWN;
-    board[6][2] = WHITE_PAWN;
-    board[6][3] = WHITE_PAWN;
-    board[6][4] = WHITE_PAWN;
-    board[6][5] = WHITE_PAWN;
-    board[6][6] = WHITE_PAWN;
-    board[6][7] = WHITE_PAWN;
+    board[6][0] = intializePiece(WHITE_PAWN, 1);
+    board[6][1] = intializePiece(WHITE_PAWN, 1);
+    board[6][2] = intializePiece(WHITE_PAWN, 1);
+    board[6][3] = intializePiece(WHITE_PAWN, 1);
+    board[6][4] = intializePiece(WHITE_PAWN, 1);
+    board[6][5] = intializePiece(WHITE_PAWN, 1);
+    board[6][6] = intializePiece(WHITE_PAWN, 1);
+    board[6][7] = intializePiece(WHITE_PAWN, 1);
     // intialize black pawns
-    board[1][0] = BLACK_PAWN;
-    board[1][1] = BLACK_PAWN;
-    board[1][2] = BLACK_PAWN;
-    board[1][3] = BLACK_PAWN;
-    board[1][4] = BLACK_PAWN;
-    board[1][5] = BLACK_PAWN;
-    board[1][6] = BLACK_PAWN;
-    board[1][7] = BLACK_PAWN;
+    board[1][0] = intializePiece(BLACK_PAWN, 1);
+    board[1][1] = intializePiece(BLACK_PAWN, 1);
+    board[1][2] = intializePiece(BLACK_PAWN, 1);
+    board[1][3] = intializePiece(BLACK_PAWN, 1);
+    board[1][4] = intializePiece(BLACK_PAWN, 1);
+    board[1][5] =intializePiece(BLACK_PAWN, 1);
+    board[1][6] = intializePiece(BLACK_PAWN, 1);
+    board[1][7] = intializePiece(BLACK_PAWN, 1);
      // intialize black pieces
-    board[0][0] = WHITE_ROOK;
-    board[0][1] = WHITE_KNIGHT;
-    board[0][2] = WHITE_BISHOP;
-    board[0][3] = WHITE_QUEEN;
-    board[0][4] = WHITE_KING;
-    board[0][5] = WHITE_BISHOP;
-    board[0][6] = WHITE_KNIGHT;
-    board[0][7] = WHITE_ROOK;
+    board[0][0] = intializePiece(BLACK_ROOK, 5);
+    board[0][1] = intializePiece(BLACK_KNIGHT, 3);
+    board[0][2] = intializePiece(BLACK_BISHOP, 3);
+    board[0][3] = intializePiece(BLACK_QUEEN, 9);
+    board[0][4] = intializePiece(BLACK_KING, -1);
+    board[0][5] = intializePiece(BLACK_BISHOP, 3);
+    board[0][6] = intializePiece(BLACK_KNIGHT, 3);
+    board[0][7] = intializePiece(BLACK_ROOK, 5);
 
 
      for (int i = 2; i < 6; i++) {
         for (int j = 0; j < 8; j++) {
-            board[i][j] = ".";
+            board[i][j].symbol = ".";
         }
     }
 }
@@ -100,9 +101,9 @@ void ChessBoard::movePiece(string start, string end) {
    getPosition(start, currPosition);
    getPosition(end, nextPosition);
    // piece we are trying to move
-   string currPiece = board[currPosition[0]][currPosition[1]];
+   Piece currPiece = board[currPosition[0]][currPosition[1]];
    // replace piece with empty space, as you have just moved it
-   board[currPosition[0]][currPosition[1]] = ".";
+   board[currPosition[0]][currPosition[1]].symbol = ".";
    // move the piece we are trying to move to its new location
    board[nextPosition[0]][nextPosition[1]] = currPiece;
 }
@@ -113,7 +114,7 @@ void ChessBoard::printBoard() {
     for (int i = 0; i < 8; i++) {
         cout << z << " ";
         for (int j = 0; j < 8; j++) {
-           cout << board[i][j] << "  ";
+           cout << board[i][j].symbol << "  ";
         }
         z--;
         cout << endl;
@@ -127,6 +128,13 @@ void ChessBoard::printBoard() {
         }
     }
     cout << endl;
+}
+
+ChessBoard::Piece ChessBoard::intializePiece(string symbol, int value) {
+    Piece newPiece;
+    newPiece.symbol = symbol;
+    newPiece.value = value;
+    return newPiece;
 }
 
 
