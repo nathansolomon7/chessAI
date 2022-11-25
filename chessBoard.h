@@ -21,6 +21,7 @@ class ChessBoard {
         int getRowCoord(char number);
         Piece intializePiece(std::string symbol, int value, int color);
         bool isValidMove(int prevColor, int nextRow, int nextCol);
+        bool isValidInput(std::string start, std::string end);
 };
 
 

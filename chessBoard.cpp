@@ -35,7 +35,7 @@ void ChessBoard::initializeBoard() {
     board[7][1] = intializePiece(WHITE_KNIGHT, 3, 1);
     board[7][2] = intializePiece(WHITE_BISHOP, 3, 1);
     board[7][3] = intializePiece(WHITE_QUEEN, 9, 1);
-    board[7][4] = intializePiece(WHITE_KING, -1, 1);
+    board[7][4] = intializePiece(WHITE_KING, 90, 1);
     board[7][5] = intializePiece(WHITE_BISHOP, 3, 1);
     board[7][6] = intializePiece(WHITE_KNIGHT, 3, 1);
     board[7][7] = intializePiece(WHITE_ROOK, 5, 1);
@@ -49,23 +49,23 @@ void ChessBoard::initializeBoard() {
     board[6][6] = intializePiece(WHITE_PAWN, 1, 1);
     board[6][7] = intializePiece(WHITE_PAWN, 1, 1);
     // intialize black pawns
-    board[1][0] = intializePiece(BLACK_PAWN, 1, 0);
-    board[1][1] = intializePiece(BLACK_PAWN, 1, 0);
-    board[1][2] = intializePiece(BLACK_PAWN, 1, 0);
-    board[1][3] = intializePiece(BLACK_PAWN, 1, 0);
-    board[1][4] = intializePiece(BLACK_PAWN, 1, 0);
-    board[1][5] =intializePiece(BLACK_PAWN, 1, 0);
-    board[1][6] = intializePiece(BLACK_PAWN, 1, 0);
-    board[1][7] = intializePiece(BLACK_PAWN, 1, 0);
+    board[1][0] = intializePiece(BLACK_PAWN, -1, 0);
+    board[1][1] = intializePiece(BLACK_PAWN, -1, 0);
+    board[1][2] = intializePiece(BLACK_PAWN, -1, 0);
+    board[1][3] = intializePiece(BLACK_PAWN, -1, 0);
+    board[1][4] = intializePiece(BLACK_PAWN, -1, 0);
+    board[1][5] =intializePiece(BLACK_PAWN, -1, 0);
+    board[1][6] = intializePiece(BLACK_PAWN, -1, 0);
+    board[1][7] = intializePiece(BLACK_PAWN, -1, 0);
      // intialize black pieces
-    board[0][0] = intializePiece(BLACK_ROOK, 5, 0);
-    board[0][1] = intializePiece(BLACK_KNIGHT, 3, 0);
-    board[0][2] = intializePiece(BLACK_BISHOP, 3, 0);
-    board[0][3] = intializePiece(BLACK_QUEEN, 9, 0);
-    board[0][4] = intializePiece(BLACK_KING, -1, 0);
-    board[0][5] = intializePiece(BLACK_BISHOP, 3, 0);
-    board[0][6] = intializePiece(BLACK_KNIGHT, 3, 0);
-    board[0][7] = intializePiece(BLACK_ROOK, 5, 0);
+    board[0][0] = intializePiece(BLACK_ROOK, -5, 0);
+    board[0][1] = intializePiece(BLACK_KNIGHT, -3, 0);
+    board[0][2] = intializePiece(BLACK_BISHOP, -3, 0);
+    board[0][3] = intializePiece(BLACK_QUEEN, -9, 0);
+    board[0][4] = intializePiece(BLACK_KING, -90, 0);
+    board[0][5] = intializePiece(BLACK_BISHOP, -3, 0);
+    board[0][6] = intializePiece(BLACK_KNIGHT, -3, 0);
+    board[0][7] = intializePiece(BLACK_ROOK, -5, 0);
 
 
      for (int i = 2; i < 6; i++) {
@@ -97,10 +97,7 @@ void ChessBoard::getPosition(string currCoord, int* positionArr) {
 }
 
 bool ChessBoard::movePiece(string start, string end) {
-    if (start[0] > 'H' or start[0] < 'A' 
-    or start[1] > '8' or start[1] < '1'  or
-    end[0] > 'H' or end[0] < 'A' 
-    or end[1] > '8' or end[1] < '1'  ) {
+    if (!isValidInput(start, end) ) {
             cout << "not a valid move" << endl;
             return false;
     }
@@ -118,6 +115,16 @@ bool ChessBoard::movePiece(string start, string end) {
    // move the piece we are trying to move to its new location
    board[nextPosition[0]][nextPosition[1]] = currPiece;
    return true;
+}
+
+bool ChessBoard::isValidInput(string start, string end) {
+     if (start[0] > 'H' or start[0] < 'A' 
+    or start[1] > '8' or start[1] < '1'  or
+    end[0] > 'H' or end[0] < 'A' 
+    or end[1] > '8' or end[1] < '1'  ) {
+            return false;
+    }
+    return true;
 }
 
 void ChessBoard::printBoard() {
