@@ -1,5 +1,6 @@
 #include <iostream>
 #include "chessBoard.h"
+#include "Piece.h"
 using namespace std;
 
 string BLACK_KING   = "\u2654";
@@ -149,7 +150,7 @@ void ChessBoard::printBoard() {
     cout << endl;
 }
 
-ChessBoard::Piece ChessBoard::intializePiece(string symbol, int value, int color) {
+Piece ChessBoard::intializePiece(string symbol, int value, int color) {
     Piece newPiece;
     newPiece.symbol = symbol;
     newPiece.value = value;
