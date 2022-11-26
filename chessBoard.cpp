@@ -49,41 +49,41 @@ int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
 
 void ChessBoard::initializeBoard() {
     // intialize white pieces
-    board[7][0] = initializePiece(WHITE_ROOK, 5, 1, ROOK, true);
-    board[7][1] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT, false);
-    board[7][2] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP, true);
-    board[7][3] = initializePiece(WHITE_QUEEN, 9, 1, QUEEN, true);
-    board[7][4] = initializePiece(WHITE_KING, 90, 1, KING, false);
-    board[7][5] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP, true);
-    board[7][6] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT, false);
-    board[7][7] = initializePiece(WHITE_ROOK, 5, 1, ROOK, true);
+    board[7][0] = initializePiece(WHITE_ROOK, 5, 1, ROOK, true, true);
+    board[7][1] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT, false, true);
+    board[7][2] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP, true, true);
+    board[7][3] = initializePiece(WHITE_QUEEN, 9, 1, QUEEN, true, true);
+    board[7][4] = initializePiece(WHITE_KING, 90, 1, KING, false, true);
+    board[7][5] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP, true, true);
+    board[7][6] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT, false, true);
+    board[7][7] = initializePiece(WHITE_ROOK, 5, 1, ROOK, true, true);
     // intialize white pawns
-    board[6][0] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
-    board[6][1] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
-    board[6][2] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
-    board[6][3] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
-    board[6][4] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
-    board[6][5] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
-    board[6][6] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
-    board[6][7] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
+    board[6][0] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false, true);
+    board[6][1] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false, true);
+    board[6][2] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false, true);
+    board[6][3] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false, true);
+    board[6][4] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false, true);
+    board[6][5] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false, true);
+    board[6][6] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false, true);
+    board[6][7] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false, true);
     // intialize black pawns
-    board[1][0] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
-    board[1][1] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
-    board[1][2] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
-    board[1][3] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
-    board[1][4] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
-    board[1][5] = initializePiece(BLACK_PAWN, -1, 0,PAWN, false);
-    board[1][6] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
-    board[1][7] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
+    board[1][0] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false, true);
+    board[1][1] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false, true);
+    board[1][2] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false, true);
+    board[1][3] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false, true);
+    board[1][4] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false, true);
+    board[1][5] = initializePiece(BLACK_PAWN, -1, 0,PAWN, false, true);
+    board[1][6] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false, true);
+    board[1][7] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false, true);
      // intialize black pieces
-    board[0][0] = initializePiece(BLACK_ROOK, -5, 0, ROOK, true);
-    board[0][1] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT, false);
-    board[0][2] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP, true);
-    board[0][3] = initializePiece(BLACK_QUEEN, -9, 0, QUEEN, true);
-    board[0][4] = initializePiece(BLACK_KING, -90, 0, KING, false);
-    board[0][5] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP, true);
-    board[0][6] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT, false);
-    board[0][7] = initializePiece(BLACK_ROOK, -5, 0, ROOK, true);
+    board[0][0] = initializePiece(BLACK_ROOK, -5, 0, ROOK, true, true);
+    board[0][1] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT, false, true);
+    board[0][2] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP, true, true);
+    board[0][3] = initializePiece(BLACK_QUEEN, -9, 0, QUEEN, true, true);
+    board[0][4] = initializePiece(BLACK_KING, -90, 0, KING, false, true);
+    board[0][5] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP, true, true);
+    board[0][6] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT, false, true);
+    board[0][7] = initializePiece(BLACK_ROOK, -5, 0, ROOK, true, true);
 
 
      for (int i = 2; i < 6; i++) {
@@ -167,13 +167,14 @@ void ChessBoard::printBoard() {
     cout << endl;
 }
 
-Piece ChessBoard::initializePiece(string symbol, int value, int color, int pieceType, bool isSlidingPiece) {
+Piece ChessBoard::initializePiece(string symbol, int value, int color, int pieceType, bool isSlidingPiece, bool isAtStartingPosition) {
     Piece newPiece;
     newPiece.symbol = symbol;
     newPiece.value = value;
     newPiece.color = color;
     newPiece.type = pieceType;
     newPiece.isSlidingPiece = isSlidingPiece;
+    newPiece.isAtStartingPosition = isAtStartingPosition;
     return newPiece;
 }
 
@@ -218,8 +219,11 @@ void ChessBoard::generateMoves() {
    for (int i = 0; i < 64; i++) {
             currMove = chessCoordToArrayCoord[64];
             Piece p = board[currMove.first][currMove.second];
-        if (p.color == currColorTurn) {
+        if (p.color == currColorTurn and p.isSlidingPiece) {
             generateSlidingMoves(p, i, currMove.first, currMove.second);
+        }
+        if(p.color == currColorTurn and p.type == PAWN) {
+            generatePawnMoves(p, i, currMove.first, currMove.second);
         }
     }
 }
@@ -234,16 +238,16 @@ void ChessBoard::initChessCoordToArrayCoord() {
 }
 
 
-void ChessBoard::generateSlidingMoves(Piece p, int startingSquare, int arrRow, int arrCol) {
-    // for each direction
+void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare, int arrRow, int arrCol) {
+        // for each direction
         // go through the squares in the current direction
         pair<int, int> targetArrCoords;
         int startDirIdx = 0;
         int endDirIdx = 8;
-        if (p.type == BISHOP) {
+        if (startingPiece.type == BISHOP) {
             startDirIdx = 4;
         }
-        if (p.type == ROOK) {
+        if (startingPiece.type == ROOK) {
             endDirIdx = 4;
         }
         for(int i = startDirIdx; i < 8; i++) { 
@@ -252,7 +256,7 @@ void ChessBoard::generateSlidingMoves(Piece p, int startingSquare, int arrRow, i
                 targetArrCoords = chessCoordToArrayCoord[targetSquare];
                 Piece pieceOnTargetSquare = board[targetArrCoords.first][targetArrCoords.second];
 
-                if(pieceOnTargetSquare.color == p.color) {
+                if(pieceOnTargetSquare.color == startingPiece.color) {
                     break;
                 }
                 struct Move currMove;
@@ -260,7 +264,7 @@ void ChessBoard::generateSlidingMoves(Piece p, int startingSquare, int arrRow, i
                 currMove.end = targetSquare;
                 moveList.push_back(currMove);
 
-                if (pieceOnTargetSquare.color != p.color) {
+                if (pieceOnTargetSquare.color != startingPiece.color) {
                     // enemy piece
                     break;
                 }
@@ -268,6 +272,67 @@ void ChessBoard::generateSlidingMoves(Piece p, int startingSquare, int arrRow, i
         }
 }
 
+
+void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare, int arrRow, int arrCol) {
+     pair<int, int> northWestCoords;
+     pair<int, int> northEastCoords;
+     pair <int, int> oneAheadCoords;
+     pair <int, int> twoAheadCoords;
+     int targetSquare;
+    
+       int pawnOffsetForward = 8;
+       int pawnOffetNorthWest = 7;
+       int pawnOffetNorthEast = 9;
+       // looking one ahead
+       oneAheadCoords = chessCoordToArrayCoord[startingSquare + pawnOffsetForward];
+       // looking two ahead
+       twoAheadCoords = chessCoordToArrayCoord[startingSquare + pawnOffsetForward + pawnOffsetForward];
+        // looking northwest 
+       northWestCoords = chessCoordToArrayCoord[startingSquare + pawnOffetNorthWest];
+
+       northEastCoords = chessCoordToArrayCoord[startingSquare + pawnOffetNorthEast];
+        // TODO: make sure no out of bounds occurs here
+        // if the square one ahead is free
+       if(board[oneAheadCoords.first][oneAheadCoords.second].symbol == ".") {
+            targetSquare = startingSquare + pawnOffsetForward;
+            struct Move currMove;
+            currMove.start = startingSquare;
+            currMove.end = targetSquare;
+            moveList.push_back(currMove);
+       }
+       // if we are at starting position and the square two ahead is free
+        if(board[twoAheadCoords.first][twoAheadCoords.second].symbol == "." and startingPiece.isAtStartingPosition) {
+            targetSquare = startingSquare + pawnOffsetForward + pawnOffsetForward;
+            struct Move currMove;
+            currMove.start = startingSquare;
+            currMove.end = targetSquare;
+            moveList.push_back(currMove);
+       }
+
+       // if the square northwest is not free and has an enemy color
+        if(board[northWestCoords.first][northWestCoords.second].symbol != "." and 
+            startingPiece.color != board[northWestCoords.first][northWestCoords.second].color) {
+
+            targetSquare = startingSquare + pawnOffetNorthWest;
+            struct Move currMove;
+            currMove.start = startingSquare;
+            currMove.end = targetSquare;
+            moveList.push_back(currMove);
+        }
+
+        // if the square northeast is not free and has an enemy color
+        if(board[northEastCoords.first][northEastCoords.second].symbol != "." and 
+            startingPiece.color != board[northEastCoords.first][northEastCoords.second].color) {
+            targetSquare = startingSquare + pawnOffetNorthEast;
+            struct Move currMove;
+            currMove.start = startingSquare;
+            currMove.end = targetSquare;
+            moveList.push_back(currMove);
+        }
+
+       
+       // if there is an enemy on the northeast and northwest diagonal, then we can move there
+}
 
 
 

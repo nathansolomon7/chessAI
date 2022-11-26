@@ -38,11 +38,13 @@ class ChessBoard {
         void getPosition(std::string currCoord, int* positionArr);
         int getColCoord(char letter);
         int getRowCoord(char number);
-        Piece initializePiece(std::string symbol, int value, int color, int pieceType, bool isSlidingPiece);
+        Piece initializePiece(std::string symbol, int value, int color, int pieceType, bool isSlidingPiece, bool isAtStartingPosition);
         bool isValidMove(int prevColor, int nextRow, int nextCol);
         bool isValidInput(std::string start, std::string end);
+
         void generateMoves();
-        void generateSlidingMoves(Piece p, int startingSquare, int arrRow, int arrCol);
+        void generateSlidingMoves(Piece startingPiece, int startingSquare, int arrRow, int arrCol);
+        void generatePawnMoves(Piece startingPiece, int startingSquare, int arrRow, int arrCol);
         void initChessCoordToArrayCoord();
         std::vector <std::pair<int, int>> moveSet;
         int directionOffestsArr[8] = {8, -8, -1, 1, 7, -7, 9, -9 };
