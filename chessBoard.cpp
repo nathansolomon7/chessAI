@@ -1,8 +1,10 @@
 #include <iostream>
 #include "chessBoard.h"
 #include "Piece.h"
+#include <unordered_map>
+#include <utility>
 using namespace std;
-
+//TODO: make Piece object oriented
 string BLACK_KING   = "\u2654";
 string BLACK_QUEEN	= "\u2655";
 string BLACK_ROOK   = "\u2656";	
@@ -17,16 +19,24 @@ string WHITE_ROOK	= "\u265C";
 string WHITE_BISHOP	= "\u265D";	
 string WHITE_KNIGHT	= "\u265E";
 string WHITE_PAWN	= "\u265F";	
-int WHITE = 1;
-int BLACK = 0;
-enum {
-    ROOK = 0,
-    KNIGHT,
-    BISHOP,
-    KING,
-    QUEEN,
-    PAWN
-};
+
+#define RESET   "\033[0m"
+#define BLACK   "\033[30m"      /* Black */
+#define RED     "\033[31m"      /* Red */
+#define GREEN   "\033[32m"      /* Green */
+#define YELLOW  "\033[33m"      /* Yellow */
+#define BLUE    "\033[34m"      /* Blue */
+#define MAGENTA "\033[35m"      /* Magenta */
+#define CYAN    "\033[36m"      /* Cyan */
+#define WHITE   "\033[37m"      /* White */
+#define BOLDBLACK   "\033[1m\033[30m"      /* Bold Black */
+#define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
+#define BOLDGREEN   "\033[1m\033[32m"      /* Bold Green */
+#define BOLDYELLOW  "\033[1m\033[33m"      /* Bold Yellow */
+#define BOLDBLUE    "\033[1m\033[34m"      /* Bold Blue */
+#define BOLDMAGENTA "\033[1m\033[35m"      /* Bold Magenta */
+#define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
+#define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
 int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
  ChessBoard::ChessBoard(){
@@ -39,41 +49,41 @@ int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
 
 void ChessBoard::initializeBoard() {
     // intialize white pieces
-    board[7][0] = initializePiece(WHITE_ROOK, 5, 1, ROOK);
-    board[7][1] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT);
-    board[7][2] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP);
-    board[7][3] = initializePiece(WHITE_QUEEN, 9, 1, QUEEN);
-    board[7][4] = initializePiece(WHITE_KING, 90, 1, KING);
-    board[7][5] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP);
-    board[7][6] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT);
-    board[7][7] = initializePiece(WHITE_ROOK, 5, 1, ROOK);
+    board[7][0] = initializePiece(WHITE_ROOK, 5, 1, ROOK, true);
+    board[7][1] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT, false);
+    board[7][2] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP, true);
+    board[7][3] = initializePiece(WHITE_QUEEN, 9, 1, QUEEN, true);
+    board[7][4] = initializePiece(WHITE_KING, 90, 1, KING, false);
+    board[7][5] = initializePiece(WHITE_BISHOP, 3, 1, BISHOP, true);
+    board[7][6] = initializePiece(WHITE_KNIGHT, 3, 1, KNIGHT, false);
+    board[7][7] = initializePiece(WHITE_ROOK, 5, 1, ROOK, true);
     // intialize white pawns
-    board[6][0] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
-    board[6][1] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
-    board[6][2] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
-    board[6][3] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
-    board[6][4] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
-    board[6][5] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
-    board[6][6] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
-    board[6][7] = initializePiece(WHITE_PAWN, 1, 1, PAWN);
+    board[6][0] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
+    board[6][1] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
+    board[6][2] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
+    board[6][3] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
+    board[6][4] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
+    board[6][5] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
+    board[6][6] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
+    board[6][7] = initializePiece(WHITE_PAWN, 1, 1, PAWN, false);
     // intialize black pawns
-    board[1][0] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
-    board[1][1] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
-    board[1][2] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
-    board[1][3] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
-    board[1][4] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
-    board[1][5] = initializePiece(BLACK_PAWN, -1, 0,PAWN);
-    board[1][6] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
-    board[1][7] = initializePiece(BLACK_PAWN, -1, 0, PAWN);
+    board[1][0] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
+    board[1][1] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
+    board[1][2] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
+    board[1][3] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
+    board[1][4] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
+    board[1][5] = initializePiece(BLACK_PAWN, -1, 0,PAWN, false);
+    board[1][6] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
+    board[1][7] = initializePiece(BLACK_PAWN, -1, 0, PAWN, false);
      // intialize black pieces
-    board[0][0] = initializePiece(BLACK_ROOK, -5, 0, ROOK);
-    board[0][1] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT);
-    board[0][2] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP);
-    board[0][3] = initializePiece(BLACK_QUEEN, -9, 0, QUEEN);
-    board[0][4] = initializePiece(BLACK_KING, -90, 0, KING);
-    board[0][5] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP);
-    board[0][6] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT);
-    board[0][7] = initializePiece(BLACK_ROOK, -5, 0, ROOK);
+    board[0][0] = initializePiece(BLACK_ROOK, -5, 0, ROOK, true);
+    board[0][1] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT, false);
+    board[0][2] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP, true);
+    board[0][3] = initializePiece(BLACK_QUEEN, -9, 0, QUEEN, true);
+    board[0][4] = initializePiece(BLACK_KING, -90, 0, KING, false);
+    board[0][5] = initializePiece(BLACK_BISHOP, -3, 0, BISHOP, true);
+    board[0][6] = initializePiece(BLACK_KNIGHT, -3, 0, KNIGHT, false);
+    board[0][7] = initializePiece(BLACK_ROOK, -5, 0, ROOK, true);
 
 
      for (int i = 2; i < 6; i++) {
@@ -157,12 +167,13 @@ void ChessBoard::printBoard() {
     cout << endl;
 }
 
-Piece ChessBoard::initializePiece(string symbol, int value, int color, int pieceType) {
+Piece ChessBoard::initializePiece(string symbol, int value, int color, int pieceType, bool isSlidingPiece) {
     Piece newPiece;
     newPiece.symbol = symbol;
     newPiece.value = value;
     newPiece.color = color;
-    newPiece.PieceType = pieceType;
+    newPiece.type = pieceType;
+    newPiece.isSlidingPiece = isSlidingPiece;
     return newPiece;
 }
 
@@ -173,6 +184,93 @@ bool ChessBoard::isValidMove(int prevColor, int nextRow, int nextCol) {
     }
     return true;
 }
+
+void ChessBoard::findNumSquaresToEdge() {
+    numSquaresInfo s;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            
+            s.numNorth = 7 - j;
+            s.numSouth = j;
+            s.numWest = i;
+            s.numEast = 7 - i;
+            s.numNorthWest = min(s.numNorth, s.numWest);
+            s.numSouthEast = min(s.numSouth, s.numEast);
+            s.numNorthEast = min(s.numNorth, s.numEast);
+            s.numSouthWest = min(s.numSouth, s.numWest);
+            numSquaresToEdgeArr[i][j] = s;
+        }
+    }
+    s.directionsArr[0] = s.numNorth;
+    s.directionsArr[1] = s.numSouth;
+    s.directionsArr[2] = s.numWest;
+    s.directionsArr[3] = s.numEast;
+    s.directionsArr[4] = s.numNorthWest;
+    s.directionsArr[5] = s.numSouthEast;
+    s.directionsArr[6] = s.numNorthEast;
+    s.directionsArr[7] = s.numSouthWest;
+
+}
+
+void ChessBoard::generateMoves() {
+    initChessCoordToArrayCoord();
+    pair<int, int> currMove;
+   for (int i = 0; i < 64; i++) {
+            currMove = chessCoordToArrayCoord[64];
+            Piece p = board[currMove.first][currMove.second];
+        if (p.color == currColorTurn) {
+            generateSlidingMoves(p, i, currMove.first, currMove.second);
+        }
+    }
+}
+
+void ChessBoard::initChessCoordToArrayCoord() {
+    int index = 0;
+    for (int i = 7; i >= 0; i--) {
+        for (int j = 0; j < 7; j++) {
+            chessCoordToArrayCoord[index] = make_pair(i, j);
+        }
+    }
+}
+
+
+void ChessBoard::generateSlidingMoves(Piece p, int startingSquare, int arrRow, int arrCol) {
+    // for each direction
+        // go through the squares in the current direction
+        pair<int, int> targetArrCoords;
+        int startDirIdx = 0;
+        int endDirIdx = 8;
+        if (p.type == BISHOP) {
+            startDirIdx = 4;
+        }
+        if (p.type == ROOK) {
+            endDirIdx = 4;
+        }
+        for(int i = startDirIdx; i < 8; i++) { 
+            for(int j = endDirIdx; j < numSquaresToEdgeArr[arrRow][arrCol].directionsArr[i]; j++) {
+                int targetSquare = startingSquare + directionOffestsArr[i] * (j + 1);
+                targetArrCoords = chessCoordToArrayCoord[targetSquare];
+                Piece pieceOnTargetSquare = board[targetArrCoords.first][targetArrCoords.second];
+
+                if(pieceOnTargetSquare.color == p.color) {
+                    break;
+                }
+                struct Move currMove;
+                currMove.start = startingSquare;
+                currMove.end = targetSquare;
+                moveList.push_back(currMove);
+
+                if (pieceOnTargetSquare.color != p.color) {
+                    // enemy piece
+                    break;
+                }
+            }
+        }
+}
+
+
+
+
 
 
 
