@@ -134,7 +134,7 @@ bool ChessBoard::movePiece(string start, string end) {
    // replace piece with empty space, as you have just moved it
    if(currPiece.type == PAWN and currPiece.isAtStartingPosition) {
     cout << "turning isAtStartingPosition to false" << endl;
-    board[currPosition[0]][currPosition[1]].isAtStartingPosition = false;
+    currPiece.isAtStartingPosition = false;
    }
    board[currPosition[0]][currPosition[1]].symbol = ".";
    // move the piece we are trying to move to its new location
