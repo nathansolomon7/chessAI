@@ -7,6 +7,7 @@
 using namespace std;
 int WHITE_TURN = 0;
 int BLACK_TURN = 1;
+int GRAY_TURN = 2;
 //TODO: make Piece object oriented
 string BLACK_KING   = "\u2654";
 string BLACK_QUEEN	= "\u2655";
@@ -91,9 +92,10 @@ void ChessBoard::initializeBoard() {
 
      for (int i = 2; i < 6; i++) {
         for (int j = 0; j < 8; j++) {
-            board[i][j].symbol = ".";
+            board[i][j] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
         }
     }
+    findNumSquaresToEdge();
 }
 
 int ChessBoard::getColCoord(char letter) {
@@ -133,10 +135,10 @@ bool ChessBoard::movePiece(string start, string end) {
    }
    // replace piece with empty space, as you have just moved it
    if(currPiece.type == PAWN and currPiece.isAtStartingPosition) {
-    cout << "turning isAtStartingPosition to false" << endl;
+    // cout << "turning isAtStartingPosition to false" << endl;
     currPiece.isAtStartingPosition = false;
    }
-   board[currPosition[0]][currPosition[1]].symbol = ".";
+   board[currPosition[0]][currPosition[1]] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
    // move the piece we are trying to move to its new location
    board[nextPosition[0]][nextPosition[1]] = currPiece;
    
@@ -201,11 +203,13 @@ bool ChessBoard::isValidMove(int currColor, int nextRow, int nextCol) {
 }
 
 void ChessBoard::findNumSquaresToEdge() {
-    numSquaresInfo s;
+    int z = 0;
+    numSquaresInfo squaresInfoArr[64];
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            
+            numSquaresInfo s = squaresInfoArr[z];
             s.numNorth = 7 - j;
+            // cout <<  s.numNorth << endl;
             s.numSouth = j;
             s.numWest = i;
             s.numEast = 7 - i;
@@ -213,19 +217,19 @@ void ChessBoard::findNumSquaresToEdge() {
             s.numSouthEast = min(s.numSouth, s.numEast);
             s.numNorthEast = min(s.numNorth, s.numEast);
             s.numSouthWest = min(s.numSouth, s.numWest);
-
+            s.directionsArr[0] = s.numNorth;
+            s.directionsArr[1] = s.numSouth;
+            s.directionsArr[2] = s.numWest;
+            s.directionsArr[3] = s.numEast;
+            s.directionsArr[4] = s.numNorthWest;
+            s.directionsArr[5] = s.numSouthEast;
+            s.directionsArr[6] = s.numNorthEast;
+            s.directionsArr[7] = s.numSouthWest;
             numSquaresToEdgeMap[j * 8 + i] = s;
+            z++;
         }
     }
-    s.directionsArr[0] = s.numNorth;
-    s.directionsArr[1] = s.numSouth;
-    s.directionsArr[2] = s.numWest;
-    s.directionsArr[3] = s.numEast;
-    s.directionsArr[4] = s.numNorthWest;
-    s.directionsArr[5] = s.numSouthEast;
-    s.directionsArr[6] = s.numNorthEast;
-    s.directionsArr[7] = s.numSouthWest;
-
+    
 }
 
 void ChessBoard::generateMoves() {
@@ -270,7 +274,7 @@ void ChessBoard::initChessCoordToArrayCoord() {
     for (int i = 7; i >= 0; i--) {
         for (int j = 0; j <= 7; j++) {
             chessCoordToArrayCoord[index] = make_pair(i, j);
-            //   cout << index << " -> " << chessCoordToArrayCoord[index].first << " ,"<< chessCoordToArrayCoord[index].second << endl;
+            //   cout << index << " -> " << chessCoordpieceOnTargetSquare.colorToArrayCoord[index].first << " ,"<< chessCoordToArrayCoord[index].second << endl;
              index++;
         }
     }
@@ -285,7 +289,7 @@ void ChessBoard::initChessCoordToArrayCoord() {
 void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
         // for each direction
         // go through the squares in the current direction
-        // cout << "inside generateSlidingMoves" << endl;
+        // cout << "inside generateSlidingMoves for " << startingSquare << " piece " << startingPiece.symbol << endl;
         pair<int, int> targetArrCoords;
         int startDirIdx = 0;
         int endDirIdx = 8;
@@ -295,22 +299,26 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
         if (startingPiece.type == ROOK) {
             endDirIdx = 4;
         }
-        for(int i = startDirIdx; i < 8; i++) { 
-            for(int j = endDirIdx; j < numSquaresToEdgeMap[startingSquare].directionsArr[i]; j++) {
+        for(int i = startDirIdx; i < endDirIdx; i++) { 
+            // cout << "numSquaresToEdgeMap[startingSquare].directionsArr[" << i << "]: " << numSquaresToEdgeMap[startingSquare].directionsArr[i] << endl;
+            for(int j = 0; j < numSquaresToEdgeMap[startingSquare].directionsArr[i]; j++) {
                 int targetSquare = startingSquare + slidingPieceOffestsArr[i] * (j + 1);
+                // cout << "generated target square " << targetSquare << endl;
                 targetArrCoords = chessCoordToArrayCoord[targetSquare];
                 Piece pieceOnTargetSquare = board[targetArrCoords.first][targetArrCoords.second];
 
                 if(pieceOnTargetSquare.color == startingPiece.color) {
+                    // cout << "pieceOnTargetSquare.color == startingPiece.color" << endl;
                     break;
                 }
                 struct Move currMove;
                 currMove.start = startingSquare;
                 currMove.end = targetSquare;
-                cout << "ADDING" << startingSquare << " ->  " << targetSquare << " TO MOVE list inside generateSlidingMoves" << endl;
+                // cout << "ADDING" << startingSquare << " ->  " << targetSquare << " TO MOVE list inside generateSlidingMoves" << endl;
                 moveList.push_back(currMove);
-
-                if (pieceOnTargetSquare.color != startingPiece.color) {
+                // cout << "pieceOnTargetSquare.color: " << pieceOnTargetSquare.color << endl;
+                if (pieceOnTargetSquare.color != startingPiece.color and pieceOnTargetSquare.symbol != ".") {
+                    // cout << "target square " << targetSquare << " has an enemy piece. break" << endl;
                     // enemy piece
                     break;
                 }
@@ -372,12 +380,12 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
     // if we are at starting position and the square two ahead is free
     // cout << "twoAhead: " << board[twoAheadCoords.first][twoAheadCoords.second].symbol << endl;
     if(board[twoAheadCoords.first][twoAheadCoords.second].symbol == "." and startingPiece.isAtStartingPosition) {
-        cout << "startingPiece.isAtStartingPosition: " << startingPiece.isAtStartingPosition << endl;
+        // cout << "startingPiece.isAtStartingPosition: " << startingPiece.isAtStartingPosition << endl;
         targetSquare = startingSquare + pawnOffsetForward + pawnOffsetForward;
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        cout << "adding the two pawn ahead move " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
+        // cout << "adding the two pawn ahead move " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
         moveList.push_back(currMove);
     }
 
@@ -476,7 +484,7 @@ void ChessBoard::displayMovesForPiece(string currPiece) {
             coordsToMarkOnBoard.push_back(chessToArrIdx);
         }
     }
-
+    // cout << "number of moves for piece " << currPiece << ": " << coordsToMarkOnBoard.size() << endl;
     for (size_t i = 0; i < coordsToMarkOnBoard.size(); i++) {
         int currRow = coordsToMarkOnBoard[i].first;
         int currCol = coordsToMarkOnBoard[i].second;

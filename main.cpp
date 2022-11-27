@@ -28,7 +28,7 @@ int main() {
         }
         
         Board.generateMoves();
-        Board.printAllMoves();
+        // Board.printAllMoves();
         if (turn % 2 != 0) {
             cout << "white's move: " << endl;
         }

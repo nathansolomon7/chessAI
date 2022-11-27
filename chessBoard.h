@@ -11,7 +11,8 @@ enum {
     BISHOP,
     KING,
     QUEEN,
-    PAWN
+    PAWN,
+    EMPTY
 };
 class ChessBoard {
     public:
