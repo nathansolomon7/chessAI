@@ -5,6 +5,8 @@
 #include <utility>
 #include <unordered_set>
 using namespace std;
+int WHITE_TURN = 0;
+int BLACK_TURN = 1;
 //TODO: make Piece object oriented
 string BLACK_KING   = "\u2654";
 string BLACK_QUEEN	= "\u2655";
@@ -117,7 +119,7 @@ void ChessBoard::getPosition(string currCoord, int* positionArr) {
 
 bool ChessBoard::movePiece(string start, string end) {
     if (!isValidInput(start, end) ) {
-            cout << "not a valid move" << endl;
+            cout << "not a valid move 1" << endl;
             return false;
     }
    int currPosition[2];
@@ -179,9 +181,15 @@ Piece ChessBoard::initializePiece(string symbol, int value, int color, int piece
     return newPiece;
 }
 
-bool ChessBoard::isValidMove(int prevColor, int nextRow, int nextCol) {
-    if (board[nextRow][nextCol].color == prevColor or nextRow < 0 or nextRow > 7 or nextCol < 0 or nextCol > 7) {
-        cout << "not a valid move" << endl;
+bool ChessBoard::isValidMove(int currColor, int nextRow, int nextCol) {
+    // cout << "the current piece's color: " << prevColor << endl;
+    // cout << "the piece we are trying to move to color: " << endl;
+    if (board[nextRow][nextCol].symbol != "." and board[nextRow][nextCol].color == currColor) {
+        cout << "can not take a piece of your own color" << endl;
+        return false;
+    }
+    if (currColor != currColorTurn or nextRow < 0 or nextRow > 7 or nextCol < 0 or nextCol > 7) {
+        cout << "not a valid move 2" << endl;
         return false;
     }
     return true;
@@ -218,7 +226,7 @@ void ChessBoard::findNumSquaresToEdge() {
 void ChessBoard::generateMoves() {
     initChessCoordToArrayCoord();
     pair<int, int> currMove;
-    cout << "inside generatemoves" << endl;
+    // cout << "inside generatemoves" << endl;
    for (int i = 0; i < 64; i++) {
             currMove = chessCoordToArrayCoord[i];
             // cout << i << " -> " << currMove.first << ", " << currMove.second << endl;
@@ -237,7 +245,7 @@ void ChessBoard::generateMoves() {
 }
 
 void ChessBoard::printAllMoves(){
-    cout << "inside printAllMoves" << endl;
+    // cout << "inside printAllMoves" << endl;
     pair<int, int> currMoveArrStart;
     pair<int, int> currMoveArrEnd;
     cout << "moveList size: " << moveList.size() << endl;
@@ -252,7 +260,7 @@ void ChessBoard::printAllMoves(){
 }
 
 void ChessBoard::initChessCoordToArrayCoord() {
-    cout << "inside initChessCoordToArrayCoord" << endl;
+    // cout << "inside initChessCoordToArrayCoord" << endl;
     int index = 0;
     for (int i = 7; i >= 0; i--) {
         for (int j = 0; j <= 7; j++) {
@@ -261,7 +269,7 @@ void ChessBoard::initChessCoordToArrayCoord() {
              index++;
         }
     }
-    cout << "end of initChessCoordToArrayCoord" << endl;
+    // cout << "end of initChessCoordToArrayCoord" << endl;
 }
 
 // void ChessBoard::initArrayCoordToChessCoord() {
@@ -272,7 +280,7 @@ void ChessBoard::initChessCoordToArrayCoord() {
 void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
         // for each direction
         // go through the squares in the current direction
-        cout << "inside generateSlidingMoves" << endl;
+        // cout << "inside generateSlidingMoves" << endl;
         pair<int, int> targetArrCoords;
         int startDirIdx = 0;
         int endDirIdx = 8;
@@ -294,7 +302,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
                 struct Move currMove;
                 currMove.start = startingSquare;
                 currMove.end = targetSquare;
-                cout << "ADDING TO MOVE list inside generateSlidingMoves" << endl;
+                // cout << "ADDING TO MOVE list inside generateSlidingMoves" << endl;
                 moveList.push_back(currMove);
 
                 if (pieceOnTargetSquare.color != startingPiece.color) {
@@ -307,7 +315,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
 
 
 void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
-    cout << "inside generatePawnMoves" << endl;
+    // cout << "inside generatePawnMoves" << endl;
     pair<int, int> currCoord;
     currCoord = chessCoordToArrayCoord[startingSquare];
     // cout << "currPiece at: " << startingSquare << ": " << board[currCoord.first][currCoord.second].symbol << endl;
@@ -353,7 +361,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
+        // cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
         moveList.push_back(currMove);
     }
     // if we are at starting position and the square two ahead is free
@@ -363,7 +371,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
+        // cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
         moveList.push_back(currMove);
     }
 
@@ -375,7 +383,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
+        // cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
         moveList.push_back(currMove);
     }
 
@@ -386,11 +394,11 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
+        // cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
         moveList.push_back(currMove);
     }
 
-    cout << "end of generatePawnMoves" << endl;
+    // cout << "end of generatePawnMoves" << endl;
     // if there is an enemy on the northeast and northwest diagonal, then we can move there
 }
 
@@ -420,7 +428,7 @@ void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare) {
                     Move currMove;
                     currMove.start = startingSquare;
                     currMove.end = knightJumpSquare;
-                    cout << "pushing a knight move" << endl;
+                    // cout << "pushing a knight move" << endl;
                     moveList.push_back(currMove);
                 }
                 
@@ -498,8 +506,10 @@ void ChessBoard::displayMovesForPiece(string currPiece) {
         }
     }
     cout << endl;
+}
 
-
+void ChessBoard::clearMoveList() {
+    moveList.clear();
 }
 
 

@@ -4,7 +4,6 @@
 #include <assert.h>
 using namespace std;
 
-
 int main() {
     ChessBoard Board;
     // assert(Board.convertStringInputToChessCoord("b1") == 1);
@@ -18,8 +17,7 @@ int main() {
     Board.initializeBoard();
     Board.printBoard();
     int turn = 1;
-    int WHITE_TURN = 0;
-    int BLACK_TURN = 1;
+
     while (prevMove != "quit" and nextMove != "quit") {
         if (turn % 2 != 0) {
             Board.currColorTurn = WHITE_TURN;
@@ -31,17 +29,19 @@ int main() {
         }
         
         Board.generateMoves();
-        Board.printAllMoves();
+        // Board.printAllMoves();
+        
+        cin >> prevMove >> nextMove;
         if(prevMove != "quit" and nextMove == "options") {
             Board.displayMovesForPiece(prevMove);
             continue;
         }
-        cin >> prevMove >> nextMove;
         cout << prevMove << " -> " << nextMove << endl;
         if (!Board.movePiece(prevMove, nextMove)) {
             continue;
         }
         Board.printBoard();
+        Board.clearMoveList();
         turn++;
     }
     

@@ -1,7 +1,10 @@
 #ifndef CHESS_BOARD_H
 #define CHESS_BOARD_H
+
 #include "Piece.h"
 #include <unordered_map>
+extern int WHITE_TURN;
+extern int BLACK_TURN;
 enum {
     ROOK = 0,
     KNIGHT,
@@ -10,8 +13,6 @@ enum {
     QUEEN,
     PAWN
 };
-int WHITE_TURN = 0;
-int BLACK_TURN = 1;
 class ChessBoard {
     public:
 
@@ -24,7 +25,7 @@ class ChessBoard {
         void printAllMoves();
         int convertStringInputToChessCoord(std::string currPiece);
         void displayMovesForPiece(std::string currSquare);
-        
+        void clearMoveList();
         int currColorTurn = 1;
         struct numSquaresInfo {
             int numNorth;
