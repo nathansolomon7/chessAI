@@ -10,7 +10,8 @@ enum {
     QUEEN,
     PAWN
 };
-
+int WHITE_TURN = 0;
+int BLACK_TURN = 1;
 class ChessBoard {
     public:
 
@@ -19,6 +20,11 @@ class ChessBoard {
         void initializeBoard();
         bool movePiece(std::string start, std::string end);
         void printBoard();
+        void generateMoves();
+        void printAllMoves();
+        int convertStringInputToChessCoord(std::string currPiece);
+        void displayMovesForPiece(std::string currSquare);
+        
         int currColorTurn = 1;
         struct numSquaresInfo {
             int numNorth;
@@ -42,12 +48,11 @@ class ChessBoard {
         bool isValidMove(int prevColor, int nextRow, int nextCol);
         bool isValidInput(std::string start, std::string end);
 
-        void generateMoves();
-        void generateSlidingMoves(Piece startingPiece, int startingSquare, int arrRow, int arrCol);
+        
+        void generateSlidingMoves(Piece startingPiece, int startingSquare);
         void generatePawnMoves(Piece startingPiece, int startingSquare);
         void generateKnightMoves(Piece startingPiece, int startingSquare);
         void initChessCoordToArrayCoord();
-        void displayMovesForPiece(int currSquare);
         std::vector <std::pair<int, int>> moveSet;
         int allKnightJumpsArr[8] = { 15, 17, -17, -15, 10, -6, 6, -10 };
         int slidingPieceOffestsArr[8] = {8, -8, -1, 1, 7, -7, 9, -9 };
@@ -56,9 +61,12 @@ class ChessBoard {
             int end;
         };
         std::vector<Move> moveList;
+        // std::unordered_map <string, int> arrayCoordToChessCoord;
         std::unordered_map <int, std::pair<int, int>> chessCoordToArrayCoord;
-        numSquaresInfo numSquaresToEdgeArr[8][8];
+        // numSquaresInfo numSquaresToEdgeArr[8][8];
+        std::unordered_map <int, numSquaresInfo> numSquaresToEdgeMap;
 };
+
 
 
 #endif
