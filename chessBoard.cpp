@@ -1,6 +1,7 @@
 #include <iostream>
 #include "chessBoard.h"
 #include "Piece.h"
+#include <random>
 #include <unordered_map>
 #include <utility>
 #include <unordered_set>
@@ -8,14 +9,14 @@ using namespace std;
 int WHITE_TURN = 0;
 int BLACK_TURN = 1;
 int GRAY_TURN = 2;
-//TODO: make Piece object oriented
 string BLACK_KING   = "\u2654";
 string BLACK_QUEEN	= "\u2655";
 string BLACK_ROOK   = "\u2656";	
 string BLACK_BISHOP = "\u2657";
 string BLACK_KNIGHT = "\u2658";
 string BLACK_PAWN	= "\u2659";
-
+// TODO: implement king moves and check and checkmate
+// implement minmax algorithm
 
 string WHITE_KING	= "\u265A";
 string WHITE_QUEEN	= "\u265B";
@@ -96,6 +97,7 @@ void ChessBoard::initializeBoard() {
         }
     }
     findNumSquaresToEdge();
+    initNumberCoordToLetterCoord();
 }
 
 int ChessBoard::getColCoord(char letter) {
@@ -146,9 +148,13 @@ bool ChessBoard::movePiece(string start, string end) {
 }
 
 bool ChessBoard::isValidInput(string start, string end) {
-     if (start[0] > 'H' or start[0] < 'A' 
+    start[0] = tolower(start[0]);
+    start[1] = tolower(start[1]);
+    end[0] = tolower(end[0]);
+    end[1] = tolower(end[1]);
+     if (start[0] > 'h' or start[0] < 'a' 
     or start[1] > '8' or start[1] < '1'  or
-    end[0] > 'H' or end[0] < 'A' 
+    end[0] > 'h' or end[0] < 'a' 
     or end[1] > '8' or end[1] < '1'  ) {
             return false;
     }
@@ -244,11 +250,14 @@ void ChessBoard::generateMoves() {
         if (p.color == currColorTurn and p.isSlidingPiece) {
             generateSlidingMoves(p, i);
         }
-        if(p.color == currColorTurn and p.type == PAWN) {
+        if (p.color == currColorTurn and p.type == PAWN) {
             generatePawnMoves(p, i);
         }
-        if(p.color == currColorTurn and p.type == KNIGHT) {
+        if (p.color == currColorTurn and p.type == KNIGHT) {
             generateKnightMoves(p, i);
+        }
+        if (p.color == currColorTurn and p.type == KING) {
+            generateKingMoves(p, i);
         }
     }
 }
@@ -459,6 +468,24 @@ void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare) {
     }
 }
 
+void ChessBoard::generateKingMoves(Piece startingPiece, int startingSquare) {
+    // TODO: implement check
+     pair <int, int> kingArrCoords;
+     for (int i = 0; i < 8; i++) {
+        int kingJumpSquare = startingSquare + allKingJumpsArr[i];
+         if (kingJumpSquare >= 0 && kingJumpSquare < 64) {
+            kingArrCoords = chessCoordToArrayCoord[kingJumpSquare];
+            if(startingPiece.color != board[kingArrCoords.first][kingArrCoords.second].color) {
+                Move currMove;
+                currMove.start = startingSquare;
+                currMove.end = kingJumpSquare;
+                // cout << "pushing a knight move" << endl;
+                moveList.push_back(currMove);
+            }  
+         }
+     }
+}
+
 int ChessBoard::convertStringInputToChessCoord(string currPiece) {
     char letterCol = currPiece[0];
     letterCol = tolower(letterCol);
@@ -526,7 +553,42 @@ void ChessBoard::clearMoveList() {
     moveList.clear();
 }
 
+void ChessBoard::generateRandomOpponentMove(string* movesArr) {
+    // cout << "(int)moveList.size(): " << (int)moveList.size() << endl;
+    int numMoves = (int)moveList.size();
+    random_device rd;     // Only used once to initialise (seed) engine
+    mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
+    uniform_int_distribution<int> uni(0,numMoves); // Guaranteed unbiased
 
+    auto randomIdx = uni(rng);
+    // int randomIdx =  rand() % (numMoves + 1);
+    // cout << "randomIdx: " << randomIdx << endl;
+    Move randomMove = moveList[randomIdx];
+    // convert chess cooridantes to letter coordinates
+    int startSquare = randomMove.start;
+    int targetSquare = randomMove.end; 
+    string startCoord;
+    string targetCoord;
+    startCoord = numberCoordToLetterCoordMap[startSquare];
+    targetCoord = numberCoordToLetterCoordMap[targetSquare];
+    cout << startCoord << " -> " << targetCoord << endl;
+    movesArr[0] = startCoord;
+    movesArr[1] = targetCoord;
+}
+
+void ChessBoard::initNumberCoordToLetterCoord() {
+    int z = 0;
+    for (int i = 0; i < 8; i++) {
+        for (char j = 'a'; j <= 'h'; j++) {
+            // convert to char
+            int rowNum = i + 1;
+            cout << z << " -> " << string(1, j) +  to_string(rowNum) << endl;
+             numberCoordToLetterCoordMap[z] = (string(1, j) +  to_string(rowNum));
+             z++;
+        }
+       
+    }
+}
 
 
 

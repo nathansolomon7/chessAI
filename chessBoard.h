@@ -27,6 +27,7 @@ class ChessBoard {
         int convertStringInputToChessCoord(std::string currPiece);
         void displayMovesForPiece(std::string currSquare);
         void clearMoveList();
+        void generateRandomOpponentMove(std::string* movesArr);
         int currColorTurn = 1;
         struct numSquaresInfo {
             int numNorth;
@@ -54,9 +55,12 @@ class ChessBoard {
         void generateSlidingMoves(Piece startingPiece, int startingSquare);
         void generatePawnMoves(Piece startingPiece, int startingSquare);
         void generateKnightMoves(Piece startingPiece, int startingSquare);
+        void generateKingMoves(Piece startingPiece, int startingSquare);
         void initChessCoordToArrayCoord();
+        void initNumberCoordToLetterCoord();
         std::vector <std::pair<int, int>> moveSet;
         int allKnightJumpsArr[8] = { 15, 17, -17, -15, 10, -6, 6, -10 };
+        int allKingJumpsArr[8] = {7, 8, 9, 1, -7, -8, -9, -1};
         int slidingPieceOffestsArr[8] = {8, -8, -1, 1, 7, -7, 9, -9 };
         struct Move {
             int start;
@@ -67,6 +71,7 @@ class ChessBoard {
         std::unordered_map <int, std::pair<int, int>> chessCoordToArrayCoord;
         // numSquaresInfo numSquaresToEdgeArr[8][8];
         std::unordered_map <int, numSquaresInfo> numSquaresToEdgeMap;
+        std::unordered_map <int, std::string> numberCoordToLetterCoordMap;
 };
 
 
