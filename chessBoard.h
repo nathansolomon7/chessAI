@@ -44,10 +44,13 @@ class ChessBoard {
 
         void generateMoves();
         void generateSlidingMoves(Piece startingPiece, int startingSquare, int arrRow, int arrCol);
-        void generatePawnMoves(Piece startingPiece, int startingSquare, int arrRow, int arrCol);
+        void generatePawnMoves(Piece startingPiece, int startingSquare);
+        void generateKnightMoves(Piece startingPiece, int startingSquare);
         void initChessCoordToArrayCoord();
+        void displayMovesForPiece(int currSquare);
         std::vector <std::pair<int, int>> moveSet;
-        int directionOffestsArr[8] = {8, -8, -1, 1, 7, -7, 9, -9 };
+        int allKnightJumpsArr[8] = { 15, 17, -17, -15, 10, -6, 6, -10 };
+        int slidingPieceOffestsArr[8] = {8, -8, -1, 1, 7, -7, 9, -9 };
         struct Move {
             int start;
             int end;

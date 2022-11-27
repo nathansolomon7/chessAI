@@ -3,6 +3,7 @@
 #include "Piece.h"
 #include <unordered_map>
 #include <utility>
+#include <unordered_set>
 using namespace std;
 //TODO: make Piece object oriented
 string BLACK_KING   = "\u2654";
@@ -223,7 +224,10 @@ void ChessBoard::generateMoves() {
             generateSlidingMoves(p, i, currMove.first, currMove.second);
         }
         if(p.color == currColorTurn and p.type == PAWN) {
-            generatePawnMoves(p, i, currMove.first, currMove.second);
+            generatePawnMoves(p, i);
+        }
+        if(p.color == currColorTurn and p.type == KNIGHT) {
+            generateKnightMoves(p, i);
         }
     }
 }
@@ -252,7 +256,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare, i
         }
         for(int i = startDirIdx; i < 8; i++) { 
             for(int j = endDirIdx; j < numSquaresToEdgeArr[arrRow][arrCol].directionsArr[i]; j++) {
-                int targetSquare = startingSquare + directionOffestsArr[i] * (j + 1);
+                int targetSquare = startingSquare + slidingPieceOffestsArr[i] * (j + 1);
                 targetArrCoords = chessCoordToArrayCoord[targetSquare];
                 Piece pieceOnTargetSquare = board[targetArrCoords.first][targetArrCoords.second];
 
@@ -273,7 +277,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare, i
 }
 
 
-void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare, int arrRow, int arrCol) {
+void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
      pair<int, int> northWestCoords;
      pair<int, int> northEastCoords;
      pair <int, int> oneAheadCoords;
@@ -284,13 +288,24 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare, int 
        int pawnOffetNorthWest = 7;
        int pawnOffetNorthEast = 9;
        // looking one ahead
-       oneAheadCoords = chessCoordToArrayCoord[startingSquare + pawnOffsetForward];
+       if(startingSquare + pawnOffsetForward <= 64) {
+         oneAheadCoords = chessCoordToArrayCoord[startingSquare + pawnOffsetForward];
+       }
+      
        // looking two ahead
-       twoAheadCoords = chessCoordToArrayCoord[startingSquare + pawnOffsetForward + pawnOffsetForward];
+       if(startingSquare + startingSquare + pawnOffsetForward <= 64) {
+            twoAheadCoords = chessCoordToArrayCoord[startingSquare + pawnOffsetForward + pawnOffsetForward];
+       }
+       
         // looking northwest 
-       northWestCoords = chessCoordToArrayCoord[startingSquare + pawnOffetNorthWest];
-
-       northEastCoords = chessCoordToArrayCoord[startingSquare + pawnOffetNorthEast];
+        if(startingSquare + pawnOffetNorthWest <= 64) {
+            northWestCoords = chessCoordToArrayCoord[startingSquare + pawnOffetNorthWest];
+        }
+      
+        if(startingSquare + pawnOffetNorthEast <= 64) {
+            northEastCoords = chessCoordToArrayCoord[startingSquare + pawnOffetNorthEast];
+        }
+       
         // TODO: make sure no out of bounds occurs here
         // if the square one ahead is free
        if(board[oneAheadCoords.first][oneAheadCoords.second].symbol == ".") {
@@ -334,6 +349,92 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare, int 
        // if there is an enemy on the northeast and northwest diagonal, then we can move there
 }
 
+
+void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare) {
+
+    // Calculate all squares knight can jump to from current square
+			
+			//   if (IsPinned (startSquare)) {
+			// 		continue;
+	        // }
+    pair <int, int> knightArrCoords;
+    for (int i = 0; i < 8; i++) {
+        int knightJumpSquare = startingSquare + allKnightJumpsArr[i];
+        if (knightJumpSquare >= 0 && knightJumpSquare < 64) {
+            knightArrCoords = chessCoordToArrayCoord[knightJumpSquare];
+            if(startingPiece.color == board[knightArrCoords.first][knightArrCoords.second].color) {
+                Move currMove;
+                currMove.start = startingSquare;
+                currMove.end = knightJumpSquare;
+                moveList.push_back(currMove);
+            }
+            // int knightSquareY = knightJumpSquare / 8;
+            // int knightSquareX = knightJumpSquare - knightSquareY * 8;
+            // // Ensure knight has moved max of 2 squares on x/y axis (to reject indices that have wrapped around side of board)
+            // int maxCoordMoveDst = System.Math.Max (System.Math.Abs (x - knightSquareX), System.Math.Abs (y - knightSquareY));
+            // if (maxCoordMoveDst == 2) {
+            // 	legalKnightJumps.Add ((byte) knightJumpSquare);
+            // 	knightBitboard |= 1ul << knightJumpSquare;
+            // }
+        }
+    }
+}
+
+
+void ChessBoard::displayMovesForPiece(int currSquare) {
+    // go through moves list
+    // if the move start starts with the current square index you are at,
+    // look up the end index and reprint the board with green highlighting
+    vector <pair<int, int>> coordsToMarkOnBoard;
+    unordered_set<string> setOfMarkedCoords;
+    pair<int, int> chessToArrIdx;
+    for (size_t i = 0; i < moveList.size(); i++) {
+        Move currMove = moveList[i];
+        if (currMove.start == currSquare) {
+            // get array coord of piece you need to change color and save to a list
+            chessToArrIdx = chessCoordToArrayCoord[currMove.end];
+            coordsToMarkOnBoard.push_back(chessToArrIdx);
+        }
+    }
+
+    for (size_t i = 0; i < coordsToMarkOnBoard.size(); i++) {
+        int currRow = coordsToMarkOnBoard[i].first;
+        int currCol = coordsToMarkOnBoard[i].second;
+        setOfMarkedCoords.insert(to_string(currRow) + to_string(currCol));
+    }
+
+    //coords to mark on board contains all moves that the piece can go to
+    // ex: <0, 0> needs to be highlighted
+
+    // re print board but with some pieces now highlighted
+     int z = 8;
+    cout << endl;
+    for (int i = 0; i < 8; i++) {
+        cout << z << " ";
+        for (int j = 0; j < 8; j++) {
+            if(setOfMarkedCoords.count(to_string(i) + to_string(j))) {
+                 cout << GREEN << board[i][j].symbol << RESET << "  ";
+            }
+            else {
+                 cout << board[i][j].symbol << "  ";
+            }
+          
+        }
+        z--;
+        cout << endl;
+    }
+     // print letter headers
+     cout << "  ";
+    for (int i = 65; i < 73; i++) {
+        cout << (char)i;
+        if(i != 104) {
+            cout << "  ";
+        }
+    }
+    cout << endl;
+
+
+}
 
 
 
