@@ -132,9 +132,14 @@ bool ChessBoard::movePiece(string start, string end) {
         return false;
    }
    // replace piece with empty space, as you have just moved it
+   if(currPiece.type == PAWN and currPiece.isAtStartingPosition) {
+    cout << "turning isAtStartingPosition to false" << endl;
+    board[currPosition[0]][currPosition[1]].isAtStartingPosition = false;
+   }
    board[currPosition[0]][currPosition[1]].symbol = ".";
    // move the piece we are trying to move to its new location
    board[nextPosition[0]][nextPosition[1]] = currPiece;
+   
    return true;
 }
 
@@ -254,8 +259,8 @@ void ChessBoard::printAllMoves(){
         currMoveArrStart = chessCoordToArrayCoord[currMove.start];
         currMoveArrEnd = chessCoordToArrayCoord[currMove.end];
         cout << currMove.start << " -> " << currMove.end << endl;
-        cout << "[" << currMoveArrStart.first << ", " << currMoveArrStart.second << "] to ";
-         cout << "[" << currMoveArrEnd.first << ", " << currMoveArrEnd.second << "]" << endl;
+        // cout << "[" << currMoveArrStart.first << ", " << currMoveArrStart.second << "] to ";
+        //  cout << "[" << currMoveArrEnd.first << ", " << currMoveArrEnd.second << "]" << endl;
     }
 }
 
@@ -302,7 +307,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
                 struct Move currMove;
                 currMove.start = startingSquare;
                 currMove.end = targetSquare;
-                // cout << "ADDING TO MOVE list inside generateSlidingMoves" << endl;
+                cout << "ADDING" << startingSquare << " ->  " << targetSquare << " TO MOVE list inside generateSlidingMoves" << endl;
                 moveList.push_back(currMove);
 
                 if (pieceOnTargetSquare.color != startingPiece.color) {
@@ -367,11 +372,12 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
     // if we are at starting position and the square two ahead is free
     // cout << "twoAhead: " << board[twoAheadCoords.first][twoAheadCoords.second].symbol << endl;
     if(board[twoAheadCoords.first][twoAheadCoords.second].symbol == "." and startingPiece.isAtStartingPosition) {
+        cout << "startingPiece.isAtStartingPosition: " << startingPiece.isAtStartingPosition << endl;
         targetSquare = startingSquare + pawnOffsetForward + pawnOffsetForward;
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        // cout << "adding " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
+        cout << "adding the two pawn ahead move " << startingSquare << " -> " << targetSquare << " to moves list" << endl;
         moveList.push_back(currMove);
     }
 

@@ -21,16 +21,20 @@ int main() {
     while (prevMove != "quit" and nextMove != "quit") {
         if (turn % 2 != 0) {
             Board.currColorTurn = WHITE_TURN;
-            cout << "white's move: " << endl;
+          
         }
         else {
             Board.currColorTurn = BLACK_TURN;
-            cout << "black's move: " << endl;
         }
         
         Board.generateMoves();
-        // Board.printAllMoves();
-        
+        Board.printAllMoves();
+        if (turn % 2 != 0) {
+            cout << "white's move: " << endl;
+        }
+        else {
+            cout << "black's move: " << endl;
+        }
         cin >> prevMove >> nextMove;
         if(prevMove != "quit" and nextMove == "options") {
             Board.displayMovesForPiece(prevMove);
