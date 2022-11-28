@@ -28,7 +28,7 @@ int main() {
             Board.currColorTurn = BLACK_TURN;
         }
         
-        Board.generateMoves();
+        // Board.generateMoves();
         // Board.printAllMoves();
         if (turn % 2 != 0) {
             cout << "white's move: " << endl;
@@ -40,7 +40,7 @@ int main() {
             Board.returnBestMove(oponnentMoveArr);
             cout << "opponent " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
             if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], currPointFiller)) {
-                continue;
+                break;
             }
             Board.printBoard();
             Board.clearMoveList();

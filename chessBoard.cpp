@@ -10,21 +10,21 @@ using namespace std;
 int WHITE_TURN = 0;
 int BLACK_TURN = 1;
 int GRAY_TURN = 2;
-string BLACK_KING   = "\u2654";
-string BLACK_QUEEN	= "\u2655";
-string BLACK_ROOK   = "\u2656";	
-string BLACK_BISHOP = "\u2657";
-string BLACK_KNIGHT = "\u2658";
-string BLACK_PAWN	= "\u2659";
+string BLACK_KING   = "\u265A";
+string BLACK_QUEEN	= "\u265B";
+string BLACK_ROOK   = "\u265C";	
+string BLACK_BISHOP = "\u265D";
+string BLACK_KNIGHT = "\u265E";
+string BLACK_PAWN	= "\u265F";	
 // TODO: implement king moves and check and checkmate
 // implement minmax algorithm
 
-string WHITE_KING	= "\u265A";
-string WHITE_QUEEN	= "\u265B";
-string WHITE_ROOK	= "\u265C";	
-string WHITE_BISHOP	= "\u265D";	
-string WHITE_KNIGHT	= "\u265E";
-string WHITE_PAWN	= "\u265F";	
+string WHITE_KING	= "\u2654";
+string WHITE_QUEEN	= "\u2655";
+string WHITE_ROOK	= "\u2656";	
+string WHITE_BISHOP	= "\u2657";	
+string WHITE_KNIGHT	= "\u2658";
+string WHITE_PAWN	= "\u2659";
 
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"      /* Black */
@@ -123,19 +123,25 @@ void ChessBoard::getPosition(string currCoord, int* positionArr) {
 }
 
 bool ChessBoard::movePiece(string start, string end, int& currPointsScore) {
+    // cout << "calling movePiece" << endl;
+    // cout << "we want to move " << start << " -> " << end << endl;
     if (!isValidInput(start, end) ) {
             cout << "not a valid move 1" << endl;
             return false;
     }
+    
    int currPosition[2];
    int nextPosition[2];
    getPosition(start, currPosition);
    getPosition(end, nextPosition);
    // piece we are trying to move
    Piece currPiece = board[currPosition[0]][currPosition[1]];
+   cout << "piece we are trying to move: " << currPiece.symbol << endl;
    if(!isValidMove(currPiece.color, nextPosition[0], nextPosition[1])) {
+        cout << "input from " << start << " -> " << end << " is not valid" << endl;
         return false;
    }
+//    cout << "move is valid" << endl;
    // replace piece with empty space, as you have just moved it
    if(currPiece.type == PAWN and currPiece.isAtStartingPosition) {
     // cout << "turning isAtStartingPosition to false" << endl;
@@ -153,7 +159,6 @@ bool ChessBoard::movePiece(string start, string end, int& currPointsScore) {
    }
 
    board[nextPosition[0]][nextPosition[1]] = currPiece;
-   
    return true;
 }
 
@@ -211,6 +216,7 @@ bool ChessBoard::isValidMove(int currColor, int nextRow, int nextCol) {
         cout << "can not take a piece of your own color" << endl;
         return false;
     }
+    // cout << "currColor of piece we are trying to move: " << currColor << " vs " << currColorTurn << endl;
     if (currColor != currColorTurn or nextRow < 0 or nextRow > 7 or nextCol < 0 or nextCol > 7) {
         cout << "not a valid move 2" << endl;
         return false;
@@ -270,18 +276,21 @@ void ChessBoard::generateMoves() {
             generateKingMoves(p, i);
         }
     }
+    printAllMoves();
 }
 
 void ChessBoard::printAllMoves(){
     // cout << "inside printAllMoves" << endl;
-    pair<int, int> currMoveArrStart;
-    pair<int, int> currMoveArrEnd;
+    // pair<int, int> currMoveArrStart;
+    // pair<int, int> currMoveArrEnd;
     cout << "moveList size: " << moveList.size() << endl;
     for (size_t i = 0; i < moveList.size(); i++) {
         Move currMove = moveList[i];
-        currMoveArrStart = chessCoordToArrayCoord[currMove.start];
-        currMoveArrEnd = chessCoordToArrayCoord[currMove.end];
-        cout << currMove.start << " -> " << currMove.end << endl;
+        // currMoveArrStart = chessCoordToArrayCoord[currMove.start];
+        // currMoveArrEnd = chessCoordToArrayCoord[currMove.end];
+        string currMoveStartString = numberCoordToLetterCoordMap[currMove.start];
+        string currMoveEndString = numberCoordToLetterCoordMap[currMove.end];
+        cout << currMoveStartString << " -> " << currMoveEndString << endl;
         // cout << "[" << currMoveArrStart.first << ", " << currMoveArrStart.second << "] to ";
         //  cout << "[" << currMoveArrEnd.first << ", " << currMoveArrEnd.second << "]" << endl;
     }
@@ -592,7 +601,6 @@ void ChessBoard::initNumberCoordToLetterCoord() {
         for (char j = 'a'; j <= 'h'; j++) {
             // convert to char
             int rowNum = i + 1;
-            cout << z << " -> " << string(1, j) +  to_string(rowNum) << endl;
              numberCoordToLetterCoordMap[z] = (string(1, j) +  to_string(rowNum));
              z++;
         }
@@ -604,42 +612,55 @@ void ChessBoard::returnBestMove(string* oponnentMove) {
     bestMove.start = 0;
     bestMove.end = 0;
     
-    runMinMaxOnBoard(0, 2, 0, bestMove);
+    runMinMaxOnBoard(0, 3, 0, bestMove, 0, board);
     string startCoord = numberCoordToLetterCoordMap[bestMove.start];
+    // cout << "startCoord: " << startCoord << endl;
     string endCoord = numberCoordToLetterCoordMap[bestMove.end];
+    // cout << "endCoord: " << endCoord << endl;
+    cout << "returned best move" << endl;
     oponnentMove[0] = startCoord;
     oponnentMove[1] = endCoord;
-
     // convert best move start and end to letter coords 
     // pass the letter coords into movePiece function
 }
 // white will be maximizing, black will be minimizing
-int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScore, Move& bestMove) {
-    if (currDepth == maxDepth or moveList.size() == 0) {
-        if (currColorTurn == WHITE_TURN) {
-            return INT_MIN;
-        }
-        if (currColorTurn == BLACK_TURN) {
-            return INT_MAX;
-        }
-
+int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScore, Move& bestMove, int optimalScore, Piece currBoard[8][8]) {
+    cout << "inside runMinMaxOnBoard" << endl;
+    if (currDepth == maxDepth) {
+        cout << "hit baseCase" << endl;
+        return optimalScore;
     }
+    
     currDepth++;
     string startCoord;
     string endCoord;
+    if (currColorTurn == WHITE_TURN) {
+            cout << "white's move: " << endl;
+        }
+        if (currColorTurn == BLACK_TURN) {
+            cout << "black's move: " << endl;
+        }
     generateMoves();
+    int numPossibleMoves = moveList.size();
+    Move possibleMovesArrLocal[numPossibleMoves];
+    memcpy((void*)possibleMovesArrLocal, &moveList[0], numPossibleMoves);
     if (currColorTurn == WHITE_TURN) {
         int currMaxValue = INT_MIN;
-        for (size_t i = 0; i < moveList.size(); i++) {
+        for (int i = 0; i < numPossibleMoves; i++) {
+            cout << "iteration " << i << " for white turn out of " << numPossibleMoves << endl;
             // make the move
-            Move currMove = moveList[i];
+            Move currMove = possibleMovesArrLocal[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
             movePiece(startCoord, endCoord, currPointsScore);
+            cout << "about to print board" << endl;
+            printBoard();
+            cout << "printed board" << endl;
             // calculate the points gained from the move
             currColorTurn = BLACK_TURN;
             clearMoveList();
-            currMaxValue = max(currPointsScore, runMinMaxOnBoard(currDepth, maxDepth, currPointsScore, bestMove));
+            currMaxValue = max(currPointsScore, runMinMaxOnBoard(currDepth, maxDepth, currPointsScore, bestMove, currMaxValue));
+            cout << "currMaxValue for white turn: " << currMaxValue << endl;
             if (currMaxValue == currPointsScore) {
                 bestMove = currMove;
             }
@@ -649,16 +670,21 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
     // make sure that it does not make moves for the gray empty pice
     else {
         int currMinValue = INT_MAX;
-         for (size_t i = 0; i < moveList.size(); i++) {
+         for (int i = 0; i < numPossibleMoves; i++) {
+            cout << "iteration " << i << " for black turn out of " << numPossibleMoves << endl;
             // make the move
             Move currMove = moveList[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
             movePiece(startCoord, endCoord, currPointsScore);
+            // cout << "about to print board" << endl;
+            printBoard();
+            // cout << "printed board" << endl;
             // calculate the points gained from the move
-            currColorTurn = BLACK_TURN;
+            currColorTurn = WHITE_TURN;
             clearMoveList();
-            currMinValue = min(currPointsScore, runMinMaxOnBoard(currDepth, maxDepth, currPointsScore, bestMove));
+            currMinValue = min(currPointsScore, runMinMaxOnBoard(currDepth, maxDepth, currPointsScore, bestMove, currMinValue));
+            cout << "currMinValue for black turn: " << currMinValue << endl;
             if (currMinValue == currPointsScore) {
                 bestMove = currMove;
             }
