@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 #include <unordered_set>
+#include <algorithm>
 using namespace std;
 int WHITE_TURN = 0;
 int BLACK_TURN = 1;
@@ -121,7 +122,7 @@ void ChessBoard::getPosition(string currCoord, int* positionArr) {
     positionArr[1] = getColCoord(currCoord[0]);
 }
 
-bool ChessBoard::movePiece(string start, string end) {
+bool ChessBoard::movePiece(string start, string end, int& currPointsScore) {
     if (!isValidInput(start, end) ) {
             cout << "not a valid move 1" << endl;
             return false;
@@ -142,6 +143,15 @@ bool ChessBoard::movePiece(string start, string end) {
    }
    board[currPosition[0]][currPosition[1]] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
    // move the piece we are trying to move to its new location
+   if(board[nextPosition[0]][nextPosition[1]].color == BLACK_TURN and currPiece.color == WHITE_TURN) {
+        whiteScore += board[nextPosition[0]][nextPosition[1]].value + currPointsScore;
+        currPointsScore = whiteScore;
+   }
+   if(board[nextPosition[0]][nextPosition[1]].color == WHITE_TURN and currPiece.color == BLACK_TURN) {
+        blackScore += board[nextPosition[0]][nextPosition[1]].value + currPointsScore;
+        currPointsScore = blackScore;
+   }
+
    board[nextPosition[0]][nextPosition[1]] = currPiece;
    
    return true;
@@ -586,11 +596,76 @@ void ChessBoard::initNumberCoordToLetterCoord() {
              numberCoordToLetterCoordMap[z] = (string(1, j) +  to_string(rowNum));
              z++;
         }
-       
     }
 }
 
+void ChessBoard::returnBestMove(string* oponnentMove) {
+    Move bestMove;
+    bestMove.start = 0;
+    bestMove.end = 0;
+    
+    runMinMaxOnBoard(0, 2, 0, bestMove);
+    string startCoord = numberCoordToLetterCoordMap[bestMove.start];
+    string endCoord = numberCoordToLetterCoordMap[bestMove.end];
+    oponnentMove[0] = startCoord;
+    oponnentMove[1] = endCoord;
 
+    // convert best move start and end to letter coords 
+    // pass the letter coords into movePiece function
+}
+// white will be maximizing, black will be minimizing
+int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScore, Move& bestMove) {
+    if (currDepth == maxDepth or moveList.size() == 0) {
+        if (currColorTurn == WHITE_TURN) {
+            return INT_MIN;
+        }
+        if (currColorTurn == BLACK_TURN) {
+            return INT_MAX;
+        }
+
+    }
+    currDepth++;
+    string startCoord;
+    string endCoord;
+    generateMoves();
+    if (currColorTurn == WHITE_TURN) {
+        int currMaxValue = INT_MIN;
+        for (size_t i = 0; i < moveList.size(); i++) {
+            // make the move
+            Move currMove = moveList[i];
+            startCoord = numberCoordToLetterCoordMap[currMove.start];
+            endCoord = numberCoordToLetterCoordMap[currMove.end];
+            movePiece(startCoord, endCoord, currPointsScore);
+            // calculate the points gained from the move
+            currColorTurn = BLACK_TURN;
+            clearMoveList();
+            currMaxValue = max(currPointsScore, runMinMaxOnBoard(currDepth, maxDepth, currPointsScore, bestMove));
+            if (currMaxValue == currPointsScore) {
+                bestMove = currMove;
+            }
+        }
+        return currMaxValue; 
+    }
+    // make sure that it does not make moves for the gray empty pice
+    else {
+        int currMinValue = INT_MAX;
+         for (size_t i = 0; i < moveList.size(); i++) {
+            // make the move
+            Move currMove = moveList[i];
+            startCoord = numberCoordToLetterCoordMap[currMove.start];
+            endCoord = numberCoordToLetterCoordMap[currMove.end];
+            movePiece(startCoord, endCoord, currPointsScore);
+            // calculate the points gained from the move
+            currColorTurn = BLACK_TURN;
+            clearMoveList();
+            currMinValue = min(currPointsScore, runMinMaxOnBoard(currDepth, maxDepth, currPointsScore, bestMove));
+            if (currMinValue == currPointsScore) {
+                bestMove = currMove;
+            }
+        }
+        return currMinValue; 
+    }
+}
 
 
 

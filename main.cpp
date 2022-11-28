@@ -18,6 +18,7 @@ int main() {
     Board.printBoard();
     int turn = 1;
     string oponnentMoveArr[2];
+    int currPointFiller = 0;
     while (prevMove != "quit" and nextMove != "quit") {
         if (turn % 2 != 0) {
             Board.currColorTurn = WHITE_TURN;
@@ -35,9 +36,10 @@ int main() {
         }
         else {
             cout << "black's move: " << endl;
-            Board.generateRandomOpponentMove(oponnentMoveArr);
+            // Board.generateRandomOpponentMove(oponnentMoveArr);
+            Board.returnBestMove(oponnentMoveArr);
             cout << "opponent " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
-            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1])) {
+            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], currPointFiller)) {
                 continue;
             }
             Board.printBoard();
@@ -51,7 +53,7 @@ int main() {
             continue;
         }
         cout << prevMove << " -> " << nextMove << endl;
-        if (!Board.movePiece(prevMove, nextMove)) {
+        if (!Board.movePiece(prevMove, nextMove, currPointFiller)) {
             continue;
         }
         Board.printBoard();

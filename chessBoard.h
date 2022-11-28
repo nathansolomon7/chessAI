@@ -20,7 +20,7 @@ class ChessBoard {
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
-        bool movePiece(std::string start, std::string end);
+        bool movePiece(std::string start, std::string end, int& currScore);
         void printBoard();
         void generateMoves();
         void printAllMoves();
@@ -28,6 +28,7 @@ class ChessBoard {
         void displayMovesForPiece(std::string currSquare);
         void clearMoveList();
         void generateRandomOpponentMove(std::string* movesArr);
+        void returnBestMove(std::string* oponnentMove);
         int currColorTurn = 1;
         struct numSquaresInfo {
             int numNorth;
@@ -66,6 +67,9 @@ class ChessBoard {
             int start;
             int end;
         };
+        int whiteScore = 0;
+        int blackScore = 0;
+        int runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScore, Move& bestMove);
         std::vector<Move> moveList;
         // std::unordered_map <string, int> arrayCoordToChessCoord;
         std::unordered_map <int, std::pair<int, int>> chessCoordToArrayCoord;
