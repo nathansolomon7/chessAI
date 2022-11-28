@@ -18,7 +18,9 @@ int main() {
     Board.printBoard();
     int turn = 1;
     string oponnentMoveArr[2];
+    Piece fillerBoard[8][8];
     int currPointFiller = 0;
+    int halt;
     while (prevMove != "quit" and nextMove != "quit") {
         if (turn % 2 != 0) {
             Board.currColorTurn = WHITE_TURN;
@@ -32,19 +34,23 @@ int main() {
         // Board.printAllMoves();
         if (turn % 2 != 0) {
             cout << "white's move: " << endl;
-             cin >> prevMove >> nextMove;
+            //  cin >> prevMove >> nextMove;
+            prevMove = "A2";
+            nextMove = "A4";
         }
         else {
             cout << "black's move: " << endl;
             // Board.generateRandomOpponentMove(oponnentMoveArr);
-            Board.returnBestMove(oponnentMoveArr);
+            Board.generateBestMove(oponnentMoveArr);
             cout << "opponent " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
-            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], currPointFiller)) {
+
+            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], currPointFiller, fillerBoard, false)) {
                 break;
             }
             Board.printBoard();
             Board.clearMoveList();
             turn++;
+            cin >> halt;
             continue;
         }
        
@@ -53,7 +59,7 @@ int main() {
             continue;
         }
         cout << prevMove << " -> " << nextMove << endl;
-        if (!Board.movePiece(prevMove, nextMove, currPointFiller)) {
+        if (!Board.movePiece(prevMove, nextMove, currPointFiller, fillerBoard, false)) {
             continue;
         }
         Board.printBoard();

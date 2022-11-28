@@ -20,7 +20,7 @@ class ChessBoard {
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
-        bool movePiece(std::string start, std::string end, int& currScore);
+        bool movePiece(std::string start, std::string end, int& currScore, Piece localBoard[8][8], bool isLocal);
         void printBoard();
         void generateMoves();
         void printAllMoves();
@@ -28,7 +28,7 @@ class ChessBoard {
         void displayMovesForPiece(std::string currSquare);
         void clearMoveList();
         void generateRandomOpponentMove(std::string* movesArr);
-        void returnBestMove(std::string* oponnentMove);
+        void generateBestMove(std::string* oponnentMove);
         int currColorTurn = 1;
         struct numSquaresInfo {
             int numNorth;
@@ -59,6 +59,7 @@ class ChessBoard {
         void generateKingMoves(Piece startingPiece, int startingSquare);
         void initChessCoordToArrayCoord();
         void initNumberCoordToLetterCoord();
+        void printLocalBoard(Piece localBoard[8][8]);
         std::vector <std::pair<int, int>> moveSet;
         int allKnightJumpsArr[8] = { 15, 17, -17, -15, 10, -6, 6, -10 };
         int allKingJumpsArr[8] = {7, 8, 9, 1, -7, -8, -9, -1};
