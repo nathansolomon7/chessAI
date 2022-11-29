@@ -310,7 +310,7 @@ void ChessBoard::findNumSquaresToEdge() {
     
 }
 
-void ChessBoard::generateMoves( Piece (*currBoard)[8]) {
+void ChessBoard::generateMoves( Piece (*currBoard)[8], int currTurnLocal) {
     initChessCoordToArrayCoord();
     pair<int, int> currMove;
     // cout << "inside generatemoves" << endl;
@@ -319,16 +319,16 @@ void ChessBoard::generateMoves( Piece (*currBoard)[8]) {
             // cout << i << " -> " << currMove.first << ", " << currMove.second << endl;
             Piece p = currBoard[currMove.first][currMove.second];
             
-        if (p.color == currColorTurn and p.isSlidingPiece) {
+        if (p.color == currTurnLocal and p.isSlidingPiece) {
             generateSlidingMoves(p, i, currBoard);
         }
-        if (p.color == currColorTurn and p.type == PAWN) {
-            generatePawnMoves(p, i, currBoard);
+        if (p.color == currTurnLocal and p.type == PAWN) {
+            generatePawnMoves(p, i, currBoard, currTurnLocal);
         }
-        if (p.color == currColorTurn and p.type == KNIGHT) {
+        if (p.color == currTurnLocal and p.type == KNIGHT) {
             generateKnightMoves(p, i, currBoard);
         }
-        if (p.color == currColorTurn and p.type == KING) {
+        if (p.color == currTurnLocal and p.type == KING) {
             generateKingMoves(p, i, currBoard);
         }
     }
@@ -411,7 +411,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare,  
 }
 
 
-void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8]) {
+void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], int currColorTurn) {
     // cout << "inside generatePawnMoves" << endl;
     pair<int, int> currCoord;
     currCoord = chessCoordToArrayCoord[startingSquare];
@@ -672,7 +672,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     // cout << "local board: " << endl;
     printLocalBoard(localBoard);
     // Piece localBoard[8][8] = board;
-    runMinMaxOnBoard(0, 1, 0, bestMove, 0, board, currColorTurn);
+    runMinMaxOnBoard(0, 1, 0, bestMove, 0, localBoard, currColorTurn);
     string startCoord = numberCoordToLetterCoordMap[bestMove.start];
     // cout << "startCoord: " << startCoord << endl;
     string endCoord = numberCoordToLetterCoordMap[bestMove.end];
@@ -702,7 +702,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
     if (currColor == BLACK_TURN) {
         cout << "black's move: " << endl;
     }
-    generateMoves(currBoard);
+    generateMoves(currBoard, currColor);
     int numPossibleMoves = moveList.size();
     Move possibleMovesArrLocal[numPossibleMoves];
     memcpy((void*)possibleMovesArrLocal, &moveList[0], numPossibleMoves * sizeof(Move));

@@ -22,7 +22,7 @@ class ChessBoard {
         void initializeBoard();
         bool movePiece(std::string start, std::string end, int& currScore,  Piece (*localBoard)[8], bool isLocal);
         void printBoard();
-        void generateMoves( Piece (*currBoard)[8]);
+        void generateMoves( Piece (*currBoard)[8], int currTurnLocal);
         void printAllMoves();
         int convertStringInputToChessCoord(std::string currPiece);
         void displayMovesForPiece(std::string currSquare);
@@ -53,7 +53,7 @@ class ChessBoard {
 
         
         void generateSlidingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
-        void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8]);
+        void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8],  int currColor);
         void generateKnightMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
         void generateKingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
         void initChessCoordToArrayCoord();
