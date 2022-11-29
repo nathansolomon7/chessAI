@@ -53,7 +53,7 @@ int main() {
         }
        
         if(prevMove != "quit" and nextMove == "options") {
-            Board.generateMoves(Board.board, Board.currColorTurn);
+            Board.generateMoves(Board.board);
             Board.displayMovesForPiece(prevMove);
             continue;
         }
