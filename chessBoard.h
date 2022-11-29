@@ -16,13 +16,13 @@ enum {
 };
 class ChessBoard {
     public:
-
+        Piece board[8][8];
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
         bool movePiece(std::string start, std::string end, int& currScore,  Piece (*localBoard)[8], bool isLocal);
         void printBoard();
-        void generateMoves();
+        void generateMoves( Piece (*currBoard)[8]);
         void printAllMoves();
         int convertStringInputToChessCoord(std::string currPiece);
         void displayMovesForPiece(std::string currSquare);
@@ -43,7 +43,6 @@ class ChessBoard {
         };
 
     private:
-        Piece board[8][8];
         void findNumSquaresToEdge();
         void getPosition(std::string currCoord, int* positionArr);
         int getColCoord(char letter);
@@ -53,10 +52,10 @@ class ChessBoard {
         bool isValidInput(std::string start, std::string end);
 
         
-        void generateSlidingMoves(Piece startingPiece, int startingSquare);
-        void generatePawnMoves(Piece startingPiece, int startingSquare);
-        void generateKnightMoves(Piece startingPiece, int startingSquare);
-        void generateKingMoves(Piece startingPiece, int startingSquare);
+        void generateSlidingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
+        void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8]);
+        void generateKnightMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
+        void generateKingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
         void initChessCoordToArrayCoord();
         void initNumberCoordToLetterCoord();
         void printLocalBoard(Piece localBoard[8][8]);

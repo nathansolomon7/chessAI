@@ -272,7 +272,7 @@ bool ChessBoard::isValidMove(int currColor, int nextRow, int nextCol) {
         cout << "can not take a piece of your own color" << endl;
         return false;
     }
-    cout << "currColor of piece we are trying to move: " << currColor << " vs " << currColorTurn << endl;
+    // cout << "currColor of piece we are trying to move: " << currColor << " vs " << currColorTurn << endl;
     if (currColor != currColorTurn or nextRow < 0 or nextRow > 7 or nextCol < 0 or nextCol > 7) {
         cout << "not a valid move 2" << endl;
         return false;
@@ -310,26 +310,26 @@ void ChessBoard::findNumSquaresToEdge() {
     
 }
 
-void ChessBoard::generateMoves() {
+void ChessBoard::generateMoves( Piece (*currBoard)[8]) {
     initChessCoordToArrayCoord();
     pair<int, int> currMove;
     // cout << "inside generatemoves" << endl;
    for (int i = 0; i < 64; i++) {
             currMove = chessCoordToArrayCoord[i];
             // cout << i << " -> " << currMove.first << ", " << currMove.second << endl;
-            Piece p = board[currMove.first][currMove.second];
+            Piece p = currBoard[currMove.first][currMove.second];
             
         if (p.color == currColorTurn and p.isSlidingPiece) {
-            generateSlidingMoves(p, i);
+            generateSlidingMoves(p, i, currBoard);
         }
         if (p.color == currColorTurn and p.type == PAWN) {
-            generatePawnMoves(p, i);
+            generatePawnMoves(p, i, currBoard);
         }
         if (p.color == currColorTurn and p.type == KNIGHT) {
-            generateKnightMoves(p, i);
+            generateKnightMoves(p, i, currBoard);
         }
         if (p.color == currColorTurn and p.type == KING) {
-            generateKingMoves(p, i);
+            generateKingMoves(p, i, currBoard);
         }
     }
     printAllMoves();
@@ -370,7 +370,7 @@ void ChessBoard::initChessCoordToArrayCoord() {
 // }
 
 
-void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
+void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8]) {
         // for each direction
         // go through the squares in the current direction
         // cout << "inside generateSlidingMoves for " << startingSquare << " piece " << startingPiece.symbol << endl;
@@ -389,7 +389,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
                 int targetSquare = startingSquare + slidingPieceOffestsArr[i] * (j + 1);
                 // cout << "generated target square " << targetSquare << endl;
                 targetArrCoords = chessCoordToArrayCoord[targetSquare];
-                Piece pieceOnTargetSquare = board[targetArrCoords.first][targetArrCoords.second];
+                Piece pieceOnTargetSquare = currBoard[targetArrCoords.first][targetArrCoords.second];
 
                 if(pieceOnTargetSquare.color == startingPiece.color) {
                     // cout << "pieceOnTargetSquare.color == startingPiece.color" << endl;
@@ -411,7 +411,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare) {
 }
 
 
-void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
+void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8]) {
     // cout << "inside generatePawnMoves" << endl;
     pair<int, int> currCoord;
     currCoord = chessCoordToArrayCoord[startingSquare];
@@ -453,7 +453,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
     // TODO: make sure no out of bounds occurs here
     // if the square one ahead is free
     // cout << "oneAhead at " << startingSquare + pawnOffsetForward << ": " << board[oneAheadCoords.first][oneAheadCoords.second].symbol << endl;
-    if(board[oneAheadCoords.first][oneAheadCoords.second].symbol == ".") {
+    if(currBoard[oneAheadCoords.first][oneAheadCoords.second].symbol == ".") {
         targetSquare = startingSquare + pawnOffsetForward;
         struct Move currMove;
         currMove.start = startingSquare;
@@ -463,7 +463,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
     }
     // if we are at starting position and the square two ahead is free
     // cout << "twoAhead: " << board[twoAheadCoords.first][twoAheadCoords.second].symbol << endl;
-    if(board[twoAheadCoords.first][twoAheadCoords.second].symbol == "." and startingPiece.isAtStartingPosition) {
+    if(currBoard[twoAheadCoords.first][twoAheadCoords.second].symbol == "." and startingPiece.isAtStartingPosition) {
         // cout << "startingPiece.isAtStartingPosition: " << startingPiece.isAtStartingPosition << endl;
         targetSquare = startingSquare + pawnOffsetForward + pawnOffsetForward;
         struct Move currMove;
@@ -474,8 +474,8 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
     }
 
     // if the square northwest is not free and has an enemy color
-    if(board[northWestCoords.first][northWestCoords.second].symbol != "." and 
-        startingPiece.color != board[northWestCoords.first][northWestCoords.second].color) {
+    if(currBoard[northWestCoords.first][northWestCoords.second].symbol != "." and 
+        startingPiece.color != currBoard[northWestCoords.first][northWestCoords.second].color) {
 
         targetSquare = startingSquare + pawnOffetNorthWest;
         struct Move currMove;
@@ -486,8 +486,8 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
     }
 
     // if the square northeast is not free and has an enemy color
-    if(board[northEastCoords.first][northEastCoords.second].symbol != "." and 
-        startingPiece.color != board[northEastCoords.first][northEastCoords.second].color) {
+    if(currBoard[northEastCoords.first][northEastCoords.second].symbol != "." and 
+        startingPiece.color != currBoard[northEastCoords.first][northEastCoords.second].color) {
         targetSquare = startingSquare + pawnOffetNorthEast;
         struct Move currMove;
         currMove.start = startingSquare;
@@ -501,7 +501,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare) {
 }
 
 
-void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare) {
+void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8]) {
 
     // Calculate all squares knight can jump to from current square
 			
@@ -515,7 +515,7 @@ void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare) {
         int knightJumpSquare = startingSquare + allKnightJumpsArr[i];
         if (knightJumpSquare >= 0 && knightJumpSquare < 64) {
             knightArrCoords = chessCoordToArrayCoord[knightJumpSquare];
-            if(startingPiece.color != board[knightArrCoords.first][knightArrCoords.second].color) {
+            if(startingPiece.color != currBoard[knightArrCoords.first][knightArrCoords.second].color) {
 
                 int knightSquareY = knightJumpSquare / 8;
                 int knightSquareX = knightJumpSquare - knightSquareY * 8;
@@ -543,14 +543,14 @@ void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare) {
     }
 }
 
-void ChessBoard::generateKingMoves(Piece startingPiece, int startingSquare) {
+void ChessBoard::generateKingMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8]) {
     // TODO: implement check
      pair <int, int> kingArrCoords;
      for (int i = 0; i < 8; i++) {
         int kingJumpSquare = startingSquare + allKingJumpsArr[i];
          if (kingJumpSquare >= 0 && kingJumpSquare < 64) {
             kingArrCoords = chessCoordToArrayCoord[kingJumpSquare];
-            if(startingPiece.color != board[kingArrCoords.first][kingArrCoords.second].color) {
+            if(startingPiece.color != currBoard[kingArrCoords.first][kingArrCoords.second].color) {
                 Move currMove;
                 currMove.start = startingSquare;
                 currMove.end = kingJumpSquare;
@@ -678,7 +678,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     string endCoord = numberCoordToLetterCoordMap[bestMove.end];
     // cout << "endCoord: " << endCoord << endl;
     cout << "returned best move" << endl;
-    cout << "num recursions: " << globalCounter << endl;
+    cout << "num nodes visited (representing num moves given starting board): " << globalCounter - 1 << endl;
     oponnentMove[0] = startCoord;
     oponnentMove[1] = endCoord;
     // convert best move start and end to letter coords 
@@ -687,12 +687,13 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
 // white will be maximizing, black will be minimizing
 int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScore, Move& bestMove, int optimalScore, Piece currBoard[8][8], int currColor) {
     cout << "inside runMinMaxOnBoard" << endl;
+    globalCounter++;
     if (currDepth == maxDepth) {
         cout << "hit baseCase" << endl;
         return optimalScore;
     }
-    globalCounter++;
-    currDepth++;
+    cout << "currColor: " << currColor << endl;
+    // currDepth++;
     string startCoord;
     string endCoord;
     if (currColor == WHITE_TURN) {
@@ -701,7 +702,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
     if (currColor == BLACK_TURN) {
         cout << "black's move: " << endl;
     }
-    generateMoves();
+    generateMoves(currBoard);
     int numPossibleMoves = moveList.size();
     Move possibleMovesArrLocal[numPossibleMoves];
     memcpy((void*)possibleMovesArrLocal, &moveList[0], numPossibleMoves * sizeof(Move));
@@ -709,7 +710,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
     Piece prevBoard[8][8];
     memcpy(prevBoard, currBoard, 64 * sizeof(Piece));
     // cout << "prev board initial: " << endl;
-    printLocalBoard(prevBoard);
+    // printLocalBoard(prevBoard);
     if (currColorTurn == WHITE_TURN) {
         int currMaxValue = INT_MIN;
         for (int i = 0; i < numPossibleMoves; i++) {
@@ -721,18 +722,16 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             
             movePiece(startCoord, endCoord, currPointsScore, currBoard, true);
             // cout << "about to print board" << endl;
-            cout << "printing curr board after moving piece: " << endl;
-            printLocalBoard(currBoard);
+            // cout << "printing curr board after moving piece (WHITE TURN): " << endl;
+            // printLocalBoard(currBoard);
             // cout << "printed board" << endl;
             // calculate the points gained from the move
             // currColor = BLACK_TURN;
             clearMoveList();
              
-            currMaxValue = max(currPointsScore, runMinMaxOnBoard(currDepth, maxDepth, currPointsScore, bestMove, currMaxValue, currBoard, BLACK_TURN));
+            currMaxValue = max(currPointsScore, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore, bestMove, currMaxValue, currBoard, BLACK_TURN));
             // TODO: this may be very inneficient. try using pointers
             memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
-            cout << "currBoard: (should be a reset board) " << endl;
-            printLocalBoard(currBoard);
             cout << "currMaxValue for white turn: " << currMaxValue << endl;
             if (currMaxValue == currPointsScore) {
                 bestMove = currMove;
@@ -752,16 +751,16 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             Piece (*pointer)[8];
             pointer = currBoard;
             movePiece(startCoord, endCoord, currPointsScore, pointer, true);
-            // cout << "about to print board" << endl;
-            printLocalBoard(currBoard);
+            // cout << "printing curr board after moving piece (BLACK TURN): " << endl;
+            // printLocalBoard(currBoard);
             // cout << "printed board" << endl;
             // calculate the points gained from the move
             // currColor = WHITE_TURN;
             clearMoveList();
-            currMinValue = min(currPointsScore, runMinMaxOnBoard(currDepth, maxDepth, currPointsScore, bestMove, currMinValue, currBoard, WHITE_TURN));
+            currMinValue = min(currPointsScore, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore, bestMove, currMinValue, currBoard, WHITE_TURN));
             memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
-            cout << "currBoard: (should be a reset board) " << endl;
-            printLocalBoard(currBoard);
+            // cout << "currBoard: (should be a reset board) " << endl;
+            // printLocalBoard(currBoard);
             cout << "currMinValue for black turn: " << currMinValue << endl;
             if (currMinValue == currPointsScore) {
                 bestMove = currMove;

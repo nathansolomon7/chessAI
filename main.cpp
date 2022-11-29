@@ -20,7 +20,6 @@ int main() {
     string oponnentMoveArr[2];
     Piece fillerBoard[8][8];
     int currPointFiller = 0;
-    int halt;
     while (prevMove != "quit" and nextMove != "quit") {
         if (turn % 2 != 0) {
             Board.currColorTurn = WHITE_TURN;
@@ -34,9 +33,9 @@ int main() {
         // Board.printAllMoves();
         if (turn % 2 != 0) {
             cout << "white's move: " << endl;
-            //  cin >> prevMove >> nextMove;
-            prevMove = "A2";
-            nextMove = "A4";
+            cin >> prevMove >> nextMove;
+            // prevMove = "A2";
+            // nextMove = "A4";
         }
         else {
             cout << "black's move: " << endl;
@@ -50,11 +49,11 @@ int main() {
             Board.printBoard();
             Board.clearMoveList();
             turn++;
-            cin >> halt;
             continue;
         }
        
         if(prevMove != "quit" and nextMove == "options") {
+            Board.generateMoves(Board.board);
             Board.displayMovesForPiece(prevMove);
             continue;
         }
