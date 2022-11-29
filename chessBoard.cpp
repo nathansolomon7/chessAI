@@ -318,12 +318,12 @@ void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal) {
             currMove = chessCoordToArrayCoord[i];
             // cout << i << " -> " << currMove.first << ", " << currMove.second << endl;
             Piece p = currBoard[currMove.first][currMove.second];
-            
-        if (p.color == currColorTurnLocal and p.isSlidingPiece) {
-            generateSlidingMoves(p, i, currBoard);
-        }
+
         if (p.color == currColorTurnLocal and p.type == PAWN) {
             generatePawnMoves(p, i, currBoard, currColorTurnLocal);
+        }
+        if (p.color == currColorTurnLocal and p.isSlidingPiece) {
+            generateSlidingMoves(p, i, currBoard);
         }
         if (p.color == currColorTurnLocal and p.type == KNIGHT) {
             generateKnightMoves(p, i, currBoard);
@@ -433,7 +433,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
         pawnOffetNorthEast = -9;
         pawnOffetNorthWest = -7;
     }
-    
+
     // looking one ahead
     if(startingSquare + pawnOffsetForward <= 64) {
    
@@ -448,12 +448,12 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
     // looking northwest 
     if(startingSquare + pawnOffetNorthWest <= 64) {
         northWestCoords = chessCoordToArrayCoord[startingSquare + pawnOffetNorthWest];
-        cout << "piece that is northwest/soutwest of starting square " << numberCoordToLetterCoordMap[startingSquare] << currBoard[northWestCoords.first][northWestCoords.second].symbol << endl;
         
     }
     
     if(startingSquare + pawnOffetNorthEast <= 64) {
         northEastCoords = chessCoordToArrayCoord[startingSquare + pawnOffetNorthEast];
+        //  cout << "piece that is northeast/southwest of starting square which is at " << numberCoordToLetterCoordMap[startingSquare + pawnOffetNorthEast] << " starting from "<< numberCoordToLetterCoordMap[startingSquare] << ": " << currBoard[northEastCoords.first][northEastCoords.second].symbol << endl;
     }
     
     // TODO: make sure no out of bounds occurs here
@@ -736,12 +736,13 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             // calculate the points gained from the move
             // currColor = BLACK_TURN;
             clearMoveList();
-             
-            currMaxValue = max(currPointsScore, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore, bestMove, currMaxValue, currBoard, BLACK_TURN));
+            int prevMaxValue = currMaxValue;
+            currMaxValue = max(currMaxValue, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore, bestMove, currMaxValue, currBoard, BLACK_TURN));
             // TODO: this may be very inneficient. try using pointers
             memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
             cout << "currMaxValue for white turn: " << currMaxValue << endl;
-            if (currMaxValue == currPointsScore) {
+            if (currMaxValue != prevMaxValue) {
+                cout << "currMaxValue has been updated. the best move is now: " << numberCoordToLetterCoordMap[currMove.start] << " -> " <<  numberCoordToLetterCoordMap[currMove.end] << endl;
                 bestMove = currMove;
             }
         }
@@ -766,12 +767,13 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             // calculate the points gained from the move
             // currColor = WHITE_TURN;
             clearMoveList();
-            currMinValue = min(currPointsScore, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore, bestMove, currMinValue, currBoard, WHITE_TURN));
+            int prevMinValue = currMinValue;
+            currMinValue = min(currMinValue, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore, bestMove, currMinValue, currBoard, WHITE_TURN));
             memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
             // cout << "currBoard: (should be a reset board) " << endl;
             // printLocalBoard(currBoard);
             cout << "currMinValue for black turn: " << currMinValue << endl;
-            if (currMinValue == currPointsScore) {
+            if (currMinValue != prevMinValue) {
                 bestMove = currMove;
             }
         }
