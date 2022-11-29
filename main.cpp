@@ -22,11 +22,11 @@ int main() {
     int currPointFiller = 0;
     while (prevMove != "quit" and nextMove != "quit") {
         if (turn % 2 != 0) {
-            Board.currColorTurn = WHITE_TURN;
+            Board.currColorTurnGlobal = WHITE_TURN;
           
         }
         else {
-            Board.currColorTurn = BLACK_TURN;
+            Board.currColorTurnGlobal = BLACK_TURN;
         }
         
         // Board.generateMoves();
@@ -43,7 +43,7 @@ int main() {
             Board.generateBestMove(oponnentMoveArr);
             cout << "opponent " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
 
-            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], currPointFiller, fillerBoard, false)) {
+            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], currPointFiller, fillerBoard, false, Board.currColorTurnGlobal)) {
                 break;
             }
             Board.printBoard();
@@ -53,12 +53,12 @@ int main() {
         }
        
         if(prevMove != "quit" and nextMove == "options") {
-            Board.generateMoves(Board.board);
+            Board.generateMoves(Board.board, Board.currColorTurnGlobal);
             Board.displayMovesForPiece(prevMove);
             continue;
         }
         cout << prevMove << " -> " << nextMove << endl;
-        if (!Board.movePiece(prevMove, nextMove, currPointFiller, fillerBoard, false)) {
+        if (!Board.movePiece(prevMove, nextMove, currPointFiller, fillerBoard, false, Board.currColorTurnGlobal)) {
             continue;
         }
         Board.printBoard();

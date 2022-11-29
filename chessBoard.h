@@ -20,16 +20,16 @@ class ChessBoard {
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
-        bool movePiece(std::string start, std::string end, int& currScore,  Piece (*localBoard)[8], bool isLocal);
+        bool movePiece(std::string start, std::string end, int& currScore,  Piece (*localBoard)[8], bool isLocal, int currColorTurnLocal);
         void printBoard();
-        void generateMoves( Piece (*currBoard)[8]);
+        void generateMoves( Piece (*currBoard)[8], int currColorTurnLocal);
         void printAllMoves();
         int convertStringInputToChessCoord(std::string currPiece);
         void displayMovesForPiece(std::string currSquare);
         void clearMoveList();
         void generateRandomOpponentMove(std::string* movesArr);
         void generateBestMove(std::string* oponnentMove);
-        int currColorTurn = 1;
+        int currColorTurnGlobal = 1;
         struct numSquaresInfo {
             int numNorth;
             int numSouth;
@@ -48,12 +48,12 @@ class ChessBoard {
         int getColCoord(char letter);
         int getRowCoord(char number);
         Piece initializePiece(std::string symbol, int value, int color, int pieceType, bool isSlidingPiece, bool isAtStartingPosition);
-        bool isValidMove(int prevColor, int nextRow, int nextCol);
+        bool isValidMove(int prevColor, int nextRow, int nextCol, int currColorTurnLocal);
         bool isValidInput(std::string start, std::string end);
 
         
         void generateSlidingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
-        void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8]);
+        void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8],  int currColorLocal);
         void generateKnightMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
         void generateKingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
         void initChessCoordToArrayCoord();
