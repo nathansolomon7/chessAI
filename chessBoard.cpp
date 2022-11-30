@@ -691,7 +691,6 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
         int minValue = INT_MAX;
         int currScore = INT_MAX;
          for (int i = 0; i < numPossibleMoves; i++) {
-            // cout << "iteration " << i << " for black turn (1) out of 1" << endl;
             // make the move
             Move currMove = possibleMovesArrLocal[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
