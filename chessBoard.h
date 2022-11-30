@@ -20,7 +20,7 @@ class ChessBoard {
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
-        bool movePiece(std::string start, std::string end,  Piece (*localBoard)[8], bool isLocal, int currColorTurnLocal);
+        bool movePiece(std::string start, std::string end,  Piece (*localBoard)[8], int currColorTurnLocal);
         void printBoard();
         void generateMoves( Piece (*currBoard)[8], int currColorTurnLocal);
         void printAllMoves();

@@ -123,36 +123,12 @@ void ChessBoard::getPosition(string currCoord, int* positionArr) {
     positionArr[1] = getColCoord(currCoord[0]);
 }
 
-bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], bool isLocal, int currColorTurnLocal) {
+bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], int currColorTurnLocal) {
     if (!isValidInput(start, end) ) {
             cout << "not a valid move 1" << endl;
             return false;
     }
-    if (!isLocal) {
-        int currPosition[2];
-        int nextPosition[2];
-        getPosition(start, currPosition);
-        getPosition(end, nextPosition);
-        // piece we are trying to move
-        Piece currPiece = board[currPosition[0]][currPosition[1]];
-        // cout << "piece we are trying to move: " << currPiece.symbol << endl;
-        if(!isValidMove(currPiece.color, nextPosition[0], nextPosition[1], currColorTurnLocal, board)) {
-                cout << "input from " << start << " -> " << end << " is not valid" << endl;
-                cout << currPiece.symbol << " -> " << board[nextPosition[0]][nextPosition[1]].symbol << endl;
-                return false;
-        }
 
-        // replace piece with empty space, as you have just moved it
-        if(currPiece.type == PAWN and currPiece.isAtStartingPosition) {
-            // cout << "turning isAtStartingPosition to false" << endl;
-            currPiece.isAtStartingPosition = false;
-        }
-        board[currPosition[0]][currPosition[1]] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
-        // move the piece we are trying to move to its new location
-        board[nextPosition[0]][nextPosition[1]] = currPiece;
-        return true;
-    }
-    else {
         int currPosition[2];
         int nextPosition[2];
         getPosition(start, currPosition);
@@ -174,7 +150,6 @@ bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], boo
 
         (localBoard)[nextPosition[0]][nextPosition[1]] = currPiece;
         return true;
-    }
    
 }
 
@@ -668,7 +643,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             Move currMove = possibleMovesArrLocal[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
-            movePiece(startCoord, endCoord, currBoard, true, currColor);
+            movePiece(startCoord, endCoord, currBoard, currColor);
             clearMoveList();
             int result = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN);
 
@@ -695,10 +670,10 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             Move currMove = possibleMovesArrLocal[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
-            Piece (*pointer)[8];
-            pointer = currBoard;
+            // Piece (*pointer)[8];
+            // pointer = currBoard;
    
-            movePiece(startCoord, endCoord, pointer, true, currColor);
+            movePiece(startCoord, endCoord, currBoard, currColor);
             clearMoveList();
             int result = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN);
 

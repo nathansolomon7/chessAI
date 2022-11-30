@@ -43,7 +43,7 @@ int main() {
             Board.generateBestMove(oponnentMoveArr);
             cout << "opponent " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
 
-            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], fillerBoard, false, Board.currColorTurnGlobal)) {
+            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], Board.board, Board.currColorTurnGlobal)) {
                 break;
             }
             Board.printBoard();
@@ -58,7 +58,7 @@ int main() {
             continue;
         }
         cout << "Your move: " << prevMove << " -> " << nextMove << endl;
-        if (!Board.movePiece(prevMove, nextMove, fillerBoard, false, Board.currColorTurnGlobal)) {
+        if (!Board.movePiece(prevMove, nextMove, Board.board, Board.currColorTurnGlobal)) {
             continue;
         }
         // Board.printBoard();
