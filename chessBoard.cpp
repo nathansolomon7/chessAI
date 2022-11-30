@@ -690,6 +690,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
 // white will be maximizing, black will be minimizing
 int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScore, Move& bestMove, Piece currBoard[8][8], int currColor) {
     // cout << "inside runMinMaxOnBoard" << endl;
+    printLocalBoard(currBoard);
     globalCounter++;
     if (currDepth == maxDepth) {
         cout << "hit max depth" << endl;
@@ -726,7 +727,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
     if (currColor == WHITE_TURN) {
         int maxValue = INT_MIN;
         int currScore = INT_MIN;
-        for (int i = 0; i < numPossibleMoves; i++) {
+        for (int i = 0; i < 3; i++) {
             // cout << "iteration " << i << " for white turn (0) out of 2" << endl;
             // make the move
             Move currMove = possibleMovesArrLocal[i];
@@ -742,10 +743,13 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             // calculate the points gained from the move
             // currColor = BLACK_TURN;
             clearMoveList();
+            // cout << "currPointsScore + pointChange: " << currPointsScore + pointChange << endl;
             // int prevMaxValue = maxValue;
             // cout << "currMaxValue on white pre recursion: " << currPointsScore << endl;
             // TODO: fix the max/ min logic. somethign to do with currPointsscore
-            currScore = max(currScore, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange , bestMove, currBoard, BLACK_TURN));
+            int result = runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange , bestMove, currBoard, BLACK_TURN);
+            cout << "max of " << currPointsScore << " and " << result << endl; 
+            currScore = max(currPointsScore, result);
             if (currScore > maxValue) {
                 maxValue = currScore;
                 if (currDepth == 0) {
@@ -765,7 +769,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
     else {
         int minValue = INT_MAX;
         int currScore = INT_MAX;
-         for (int i = 0; i < numPossibleMoves; i++) {
+         for (int i = 0; i < 3; i++) {
             // cout << "iteration " << i << " for black turn (1) out of 2" << endl;
             // make the move
             Move currMove = possibleMovesArrLocal[i];
@@ -782,9 +786,11 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             // calculate the points gained from the move
             // currColor = WHITE_TURN;
             clearMoveList();
-            
+            cout << "currPointsScore + pointChange: " << currPointsScore + pointChange << endl;
             // cout << "minValue on black pre recursion: " << currPointsScore << endl;
-            currScore = min(currScore, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange, bestMove, currBoard, WHITE_TURN));
+            int result = runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange, bestMove, currBoard, WHITE_TURN);
+            cout << "min of " << currPointsScore << " vs " << result << endl;
+            currScore = min(currPointsScore, result);
             // cout << "minValue on black post recursion: " << currPointsScore << endl;
             memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
             // cout << "currBoard: (should be a reset board) " << endl;
