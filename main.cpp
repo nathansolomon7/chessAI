@@ -57,11 +57,11 @@ int main() {
             Board.displayMovesForPiece(prevMove);
             continue;
         }
-        cout << prevMove << " -> " << nextMove << endl;
+        cout << "Your move: " << prevMove << " -> " << nextMove << endl;
         if (!Board.movePiece(prevMove, nextMove, fillerBoard, false, Board.currColorTurnGlobal)) {
             continue;
         }
-        Board.printBoard();
+        // Board.printBoard();
         Board.clearMoveList();
         turn++;
     }

@@ -48,7 +48,7 @@ class ChessBoard {
         int getColCoord(char letter);
         int getRowCoord(char number);
         Piece initializePiece(std::string symbol, int value, int color, int pieceType, bool isSlidingPiece, bool isAtStartingPosition);
-        bool isValidMove(int prevColor, int nextRow, int nextCol, int currColorTurnLocal);
+        bool isValidMove(int prevColor, int nextRow, int nextCol, int currColorTurnLocal, Piece (*localBoard)[8]);
         bool isValidInput(std::string start, std::string end);
 
         int evaluateScore(Piece (*localBoard)[8]);
