@@ -123,7 +123,7 @@ void ChessBoard::getPosition(string currCoord, int* positionArr) {
     positionArr[1] = getColCoord(currCoord[0]);
 }
 
-bool ChessBoard::movePiece(string start, string end, int& pointChange, Piece (*localBoard)[8], bool isLocal, int currColorTurnLocal) {
+bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], bool isLocal, int currColorTurnLocal) {
     // cout << "calling movePiece" << endl;
     // cout << "we want to move " << start << " -> " << end << endl;
     if (!isValidInput(start, end) ) {
@@ -150,12 +150,12 @@ bool ChessBoard::movePiece(string start, string end, int& pointChange, Piece (*l
         }
         board[currPosition[0]][currPosition[1]] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
         // move the piece we are trying to move to its new location
-        if(board[nextPosition[0]][nextPosition[1]].color == BLACK_TURN and currPiece.color == WHITE_TURN) {
-                pointChange += board[nextPosition[0]][nextPosition[1]].value;
-        }
-        if(board[nextPosition[0]][nextPosition[1]].color == WHITE_TURN and currPiece.color == BLACK_TURN) {
-                pointChange += board[nextPosition[0]][nextPosition[1]].value;
-        }
+        // if(board[nextPosition[0]][nextPosition[1]].color == BLACK_TURN and currPiece.color == WHITE_TURN) {
+        //         pointChange += board[nextPosition[0]][nextPosition[1]].value;
+        // }
+        // if(board[nextPosition[0]][nextPosition[1]].color == WHITE_TURN and currPiece.color == BLACK_TURN) {
+        //         pointChange += board[nextPosition[0]][nextPosition[1]].value;
+        // }
 
         board[nextPosition[0]][nextPosition[1]] = currPiece;
         return true;
@@ -180,18 +180,31 @@ bool ChessBoard::movePiece(string start, string end, int& pointChange, Piece (*l
         }
         (localBoard)[currPosition[0]][currPosition[1]] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
         // move the piece we are trying to move to its new location
-        if((localBoard)[nextPosition[0]][nextPosition[1]].color == BLACK_TURN and currPiece.color == WHITE_TURN) {
-                pointChange += (localBoard)[nextPosition[0]][nextPosition[1]].value;
-        }
-        if((localBoard)[nextPosition[0]][nextPosition[1]].color == WHITE_TURN and currPiece.color == BLACK_TURN) {
-                pointChange += (localBoard)[nextPosition[0]][nextPosition[1]].value;
-        }
+        // if((localBoard)[nextPosition[0]][nextPosition[1]].color == BLACK_TURN and currPiece.color == WHITE_TURN) {
+        //         pointChange += (localBoard)[nextPosition[0]][nextPosition[1]].value;
+        // }
+        // if((localBoard)[nextPosition[0]][nextPosition[1]].color == WHITE_TURN and currPiece.color == BLACK_TURN) {
+        //         pointChange += (localBoard)[nextPosition[0]][nextPosition[1]].value;
+        // }
 
         (localBoard)[nextPosition[0]][nextPosition[1]] = currPiece;
         return true;
     }
    
 }
+
+int ChessBoard::evaluateScore(Piece (*localBoard)[8]) {
+    int score = 0;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+           if(localBoard[i][j].symbol != ".") {
+                score += localBoard[i][j].value;
+           }
+        }
+    }
+    return score;
+}
+
 
 bool ChessBoard::isValidInput(string start, string end) {
     start[0] = tolower(start[0]);
@@ -675,7 +688,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     // cout << "local board: " << endl;
     printLocalBoard(localBoard);
     // Piece localBoard[8][8] = board;
-    runMinMaxOnBoard(0, 3, 0, bestMove, localBoard, currColorTurnGlobal);
+    runMinMaxOnBoard(0, 3, bestMove, localBoard, currColorTurnGlobal);
     string startCoord = numberCoordToLetterCoordMap[bestMove.start];
     // cout << "startCoord: " << startCoord << endl;
     string endCoord = numberCoordToLetterCoordMap[bestMove.end];
@@ -688,7 +701,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     // pass the letter coords into movePiece function
 }
 // white will be maximizing, black will be minimizing
-int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScore, Move& bestMove, Piece currBoard[8][8], int currColor) {
+int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor) {
     // cout << "inside runMinMaxOnBoard" << endl;
     // printLocalBoard(currBoard);
     globalCounter++;
@@ -696,12 +709,9 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
         // cout << "hit max depth" << endl;
         // cout << "hit baseCase" << endl;
         // cout << "returning " << currPointsScore << endl;
-        if (currColor == WHITE_TURN) {
-            return INT_MAX;
-        }
-        else {
-            return INT_MIN;
-        }
+            int terminalScore = evaluateScore(currBoard);
+            cout << "hit base case. curpoints score is " << terminalScore << endl;
+            return terminalScore;
     }
     // cout << "currColor: " << currColor << endl;
     // currDepth++;
@@ -728,14 +738,14 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
         int maxValue = INT_MIN;
         int currScore = INT_MIN;
         for (int i = 0; i < numPossibleMoves; i++) {
-            // cout << "iteration " << i << " for white turn (0) out of 2" << endl;
+            cout << "iteration " << i << " for white turn (0) out of 1" << endl;
             // make the move
             Move currMove = possibleMovesArrLocal[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
             // cout << "about to move piece with color " << currColor << endl;
-            int pointChange = 0;
-            movePiece(startCoord, endCoord, pointChange, currBoard, true, currColor);
+            
+            movePiece(startCoord, endCoord, currBoard, true, currColor);
             // cout << "about to print board" << endl;
             // cout << "printing curr board after moving piece (WHITE TURN): " << endl;
             // printLocalBoard(currBoard);
@@ -747,9 +757,9 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             // int prevMaxValue = maxValue;
             // cout << "currMaxValue on white pre recursion: " << currPointsScore << endl;
             // TODO: fix the max/ min logic. somethign to do with currPointsscore
-            int result = runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange , bestMove, currBoard, BLACK_TURN);
+            int result = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN);
             // cout << "max of " << currPointsScore << " and " << result << endl; 
-            currScore = max(currPointsScore, result);
+            currScore = max(currScore, result);
             if (currScore > maxValue) {
                 maxValue = currScore;
                 if (currDepth == 0) {
@@ -770,7 +780,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
         int minValue = INT_MAX;
         int currScore = INT_MAX;
          for (int i = 0; i < numPossibleMoves; i++) {
-            // cout << "iteration " << i << " for black turn (1) out of 2" << endl;
+            cout << "iteration " << i << " for black turn (1) out of 1" << endl;
             // make the move
             Move currMove = possibleMovesArrLocal[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
@@ -778,8 +788,8 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             Piece (*pointer)[8];
             pointer = currBoard;
             // cout << "about to move piece with color " << currColor << endl;
-            int pointChange = 0;
-            movePiece(startCoord, endCoord, pointChange, pointer, true, currColor);
+            // int pointChange = 0;
+            movePiece(startCoord, endCoord, pointer, true, currColor);
             // cout << "printing curr board after moving piece (BLACK TURN): " << endl;
             // printLocalBoard(currBoard);
             // cout << "printed board" << endl;
@@ -788,9 +798,9 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             clearMoveList();
             // cout << "currPointsScore + pointChange: " << currPointsScore + pointChange << endl;
             // cout << "minValue on black pre recursion: " << currPointsScore << endl;
-            int result = runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange, bestMove, currBoard, WHITE_TURN);
+            int result = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN);
             // cout << "min of " << currPointsScore << " vs " << result << endl;
-            currScore = min(currPointsScore, result);
+            currScore = min(currScore, result);
             // cout << "minValue on black post recursion: " << currPointsScore << endl;
             memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
             // cout << "currBoard: (should be a reset board) " << endl;

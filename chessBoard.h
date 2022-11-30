@@ -20,7 +20,7 @@ class ChessBoard {
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
-        bool movePiece(std::string start, std::string end, int& currScore,  Piece (*localBoard)[8], bool isLocal, int currColorTurnLocal);
+        bool movePiece(std::string start, std::string end,  Piece (*localBoard)[8], bool isLocal, int currColorTurnLocal);
         void printBoard();
         void generateMoves( Piece (*currBoard)[8], int currColorTurnLocal);
         void printAllMoves();
@@ -51,7 +51,7 @@ class ChessBoard {
         bool isValidMove(int prevColor, int nextRow, int nextCol, int currColorTurnLocal);
         bool isValidInput(std::string start, std::string end);
 
-        
+        int evaluateScore(Piece (*localBoard)[8]);
         void generateSlidingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
         void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8],  int currColorLocal);
         void generateKnightMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
@@ -69,7 +69,7 @@ class ChessBoard {
         };
         // int whiteScore = 0;
         // int blackScore = 0;
-        int runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScore, Move& bestMove, Piece currBoard[8][8], int currColor);
+        int runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor);
         std::vector<Move> moveList;
         // std::unordered_map <string, int> arrayCoordToChessCoord;
         std::unordered_map <int, std::pair<int, int>> chessCoordToArrayCoord;
