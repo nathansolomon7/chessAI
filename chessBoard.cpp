@@ -601,13 +601,14 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     memcpy(localBoard, board, 64 * sizeof(Piece));
     printLocalBoard(localBoard);
     auto start = chrono::high_resolution_clock::now();
-    runMinMaxOnBoard(0, 4, bestMove, localBoard, currColorTurnGlobal);
+    cout << "AI is loading...." << endl;
+    runMinMaxOnBoard(0, 5, bestMove, localBoard, currColorTurnGlobal);
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<float> duration = end - start;
     cout << duration.count() << " seconds" << endl;
     string startCoord = numberCoordToLetterCoordMap[bestMove.start];
     string endCoord = numberCoordToLetterCoordMap[bestMove.end];
-    cout << "returned best move" << endl;
+    cout << "AI is finished" << endl;
     cout << "num nodes visited (representing num moves given starting board): " << globalCounter << endl;
     oponnentMove[0] = startCoord;
     oponnentMove[1] = endCoord;

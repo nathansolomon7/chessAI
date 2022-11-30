@@ -32,7 +32,7 @@ int main() {
         // Board.generateMoves();
         // Board.printAllMoves();
         if (turn % 2 != 0) {
-            cout << "white's move: " << endl;
+            cout << "Input your move: " << endl;
             cin >> prevMove >> nextMove;
             // prevMove = "A2";
             // nextMove = "A4";
@@ -41,7 +41,7 @@ int main() {
             cout << "black's move: " << endl;
             // Board.generateRandomOpponentMove(oponnentMoveArr);
             Board.generateBestMove(oponnentMoveArr);
-            cout << "opponent " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
+            cout << "AI moved " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
 
             if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], Board.board, Board.currColorTurnGlobal)) {
                 break;
