@@ -316,13 +316,13 @@ void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal) {
             // cout << i << " -> " << currMove.first << ", " << currMove.second << endl;
             Piece p = currBoard[currMove.first][currMove.second];
 
-        if (p.color == currColorTurnLocal and p.type == PAWN) {
+        if (p.type == PAWN) {
             generatePawnMoves(p, i, currBoard, currColorTurnLocal);
         }
-        if (p.color == currColorTurnLocal and p.isSlidingPiece) {
+        if (p.isSlidingPiece) {
             generateSlidingMoves(p, i, currBoard);
         }
-        if (p.color == currColorTurnLocal and p.type == KNIGHT) {
+        if ( p.type == KNIGHT) {
             generateKnightMoves(p, i, currBoard);
         }
         if (p.color == currColorTurnLocal and p.type == KING) {
@@ -625,6 +625,7 @@ void ChessBoard::displayMovesForPiece(string currPiece) {
         }
     }
     cout << endl;
+    clearMoveList();
 }
 
 void ChessBoard::clearMoveList() {
