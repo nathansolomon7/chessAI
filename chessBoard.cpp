@@ -316,13 +316,13 @@ void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal) {
             // cout << i << " -> " << currMove.first << ", " << currMove.second << endl;
             Piece p = currBoard[currMove.first][currMove.second];
 
-        if (p.type == PAWN) {
+        if (p.color == currColorTurnLocal and p.type == PAWN) {
             generatePawnMoves(p, i, currBoard, currColorTurnLocal);
         }
-        if (p.isSlidingPiece) {
+        if (p.color == currColorTurnLocal and p.isSlidingPiece) {
             generateSlidingMoves(p, i, currBoard);
         }
-        if ( p.type == KNIGHT) {
+        if (p.color == currColorTurnLocal and p.type == KNIGHT) {
             generateKnightMoves(p, i, currBoard);
         }
         if (p.color == currColorTurnLocal and p.type == KING) {
@@ -406,7 +406,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare,  
         }
 }
 
-
+// TODO: fix bug on pawn's possible moves wrapping around board
 void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], int currColorLocal) {
     // cout << "inside generatePawnMoves" << endl;
     pair<int, int> currCoord;
@@ -625,7 +625,6 @@ void ChessBoard::displayMovesForPiece(string currPiece) {
         }
     }
     cout << endl;
-    clearMoveList();
 }
 
 void ChessBoard::clearMoveList() {
@@ -693,13 +692,14 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
     // cout << "inside runMinMaxOnBoard" << endl;
     globalCounter++;
     if (currDepth == maxDepth) {
+        cout << "hit max depth" << endl;
         // cout << "hit baseCase" << endl;
         // cout << "returning " << currPointsScore << endl;
         if (currColor == WHITE_TURN) {
-            return currPointsScore;
+            return INT_MAX;
         }
         else {
-            return currPointsScore;
+            return INT_MIN;
         }
     }
     // cout << "currColor: " << currColor << endl;
@@ -725,6 +725,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
     // printLocalBoard(prevBoard);
     if (currColor == WHITE_TURN) {
         int maxValue = INT_MIN;
+        int currScore = INT_MIN;
         for (int i = 0; i < numPossibleMoves; i++) {
             // cout << "iteration " << i << " for white turn (0) out of 2" << endl;
             // make the move
@@ -741,24 +742,29 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             // calculate the points gained from the move
             // currColor = BLACK_TURN;
             clearMoveList();
-            int prevMaxValue = maxValue;
+            // int prevMaxValue = maxValue;
             // cout << "currMaxValue on white pre recursion: " << currPointsScore << endl;
             // TODO: fix the max/ min logic. somethign to do with currPointsscore
-            maxValue = max(maxValue, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange , bestMove, currBoard, BLACK_TURN));
+            currScore = max(currScore, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange , bestMove, currBoard, BLACK_TURN));
+            if (currScore > maxValue) {
+                maxValue = currScore;
+                if (currDepth == 0) {
+                bestMove = currMove;
+                cout << "maxValue has been updated for white. the best move is now: " << numberCoordToLetterCoordMap[currMove.start] << " -> " <<  numberCoordToLetterCoordMap[currMove.end] << endl;
+
+                }
+            }
             // cout << "currMaxValue on white post recursion: " << maxValue << endl;
             // TODO: this may be very inneficient. try using pointers
             memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
             // cout << "maxValue for white turn: " << maxValue << endl;
-            if (maxValue != prevMaxValue and currDepth == 0) {
-                cout << "maxValue has been updated for white. the best move is now: " << numberCoordToLetterCoordMap[currMove.start] << " -> " <<  numberCoordToLetterCoordMap[currMove.end] << endl;
-                bestMove = currMove;
-            }
         }
-        return -1 * maxValue; 
+        return maxValue; 
     }
     // make sure that it does not make moves for the gray empty pice
     else {
         int minValue = INT_MAX;
+        int currScore = INT_MAX;
          for (int i = 0; i < numPossibleMoves; i++) {
             // cout << "iteration " << i << " for black turn (1) out of 2" << endl;
             // make the move
@@ -776,21 +782,25 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, int currPointsScor
             // calculate the points gained from the move
             // currColor = WHITE_TURN;
             clearMoveList();
-            int prevMinValue = minValue;
+            
             // cout << "minValue on black pre recursion: " << currPointsScore << endl;
-            minValue = min(minValue, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange, bestMove, currBoard, WHITE_TURN));
+            currScore = min(currScore, runMinMaxOnBoard(currDepth + 1, maxDepth, currPointsScore + pointChange, bestMove, currBoard, WHITE_TURN));
             // cout << "minValue on black post recursion: " << currPointsScore << endl;
             memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
             // cout << "currBoard: (should be a reset board) " << endl;
             // printLocalBoard(currBoard);
             // cout << "minValue for black turn post recurion: " << minValue << endl;
-            if (minValue != prevMinValue and currDepth == 0) {
-                cout << "minValue has been updated for black. the best move is now: " << numberCoordToLetterCoordMap[currMove.start] << " -> " <<  numberCoordToLetterCoordMap[currMove.end] << endl;
-                cout << "minValue went from " << prevMinValue << " -> " << minValue << endl;
-                bestMove = currMove;
+            if (currScore < minValue) {
+                minValue = currScore;
+                if (currDepth == 0) {
+                    cout << "minValue has been updated for black. the best move is now: " << numberCoordToLetterCoordMap[currMove.start] << " -> " <<  numberCoordToLetterCoordMap[currMove.end] << endl;
+                    // cout << "minValue went from " << prevMinValue << " -> " << minValue << endl;
+                    bestMove = currMove;
+                }
             }
+            
         }
-        return -1 * minValue; 
+        return minValue; 
     }
 }
 
