@@ -603,7 +603,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     printLocalBoard(localBoard);
     auto start = chrono::high_resolution_clock::now();
     cout << "AI is loading...." << endl;
-    runMinMaxOnBoard(0, 6, bestMove, localBoard, currColorTurnGlobal);
+    runMinMaxOnBoard(0, 20, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<float> duration = end - start;
     cout << duration.count() << " seconds" << endl;
@@ -617,7 +617,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     // pass the letter coords into movePiece function
 }
 // white will be maximizing, black will be minimizing
-int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor) {
+int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor, int alpha, int beta) {
   
     globalCounter++;
     if (currDepth == maxDepth) {
@@ -648,9 +648,15 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             endCoord = numberCoordToLetterCoordMap[currMove.end];
             movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
             clearMoveList();
-
-            currScore = max(currScore, runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN));
+            int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN, alpha, beta);
             undoMove(endCoord, startCoord, currBoard, takenPiece);
+            if (returnedResult >= beta) {
+                // cout << "returnedResult >= beta" << endl;
+                return maxValue;
+            }
+
+            alpha = max(returnedResult, alpha);
+            currScore = max(currScore, returnedResult);
             if (currScore > maxValue) {
                 // cout << "new max value of " << currScore << " for white has been found. We are at depth " << currDepth << endl;
                 maxValue = currScore;
@@ -660,7 +666,6 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
 
                 }
             }
-            // TODO: this may be very inneficient. try using pointers
             // memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
         }
         return maxValue; 
@@ -679,9 +684,15 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
    
             movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
             clearMoveList();
-
-            currScore = min(currScore, runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN));
+            int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN, alpha, beta);
             undoMove(endCoord, startCoord, currBoard, takenPiece);
+             if (returnedResult <= alpha) {
+                //  cout << "returnedResult <= alpha" << endl;
+                return minValue;
+            }
+            beta = min(beta, returnedResult);
+            currScore = min(currScore, returnedResult);
+            
             // memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
 
             if (currScore < minValue) {
@@ -692,7 +703,6 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
                     bestMove = currMove;
                 }
             }
-            
         }
         return minValue; 
     }

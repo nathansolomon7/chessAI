@@ -69,7 +69,7 @@ class ChessBoard {
         };
         // int whiteScore = 0;
         // int blackScore = 0;
-        int runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor);
+        int runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor, int alpha, int beta);
         std::vector<Move> moveList;
         // std::unordered_map <string, int> arrayCoordToChessCoord;
         std::unordered_map <int, std::pair<int, int>> chessCoordToArrayCoord;
