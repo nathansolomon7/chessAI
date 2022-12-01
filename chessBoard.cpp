@@ -280,10 +280,12 @@ void ChessBoard::findNumSquaresToEdge() {
     
 }
 
-void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, vector<Move>& currMoveList) {
+void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, vector<Move>& currMoveList, vector<int>& squaresUnderAttackByOpponent) {
     initChessCoordToArrayCoord();
     pair<int, int> currMove;
-
+    if (isCurrColorIsInCheck()) {
+        // generate a list of moves that would unblock the currcolor or escape the check
+    }
    for (int i = 0; i < 64; i++) {
             currMove = chessCoordToArrayCoord[i];
             Piece p = currBoard[currMove.first][currMove.second];
@@ -300,6 +302,15 @@ void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, v
         if (p.color == currColorTurnLocal and p.type == KING) {
             generateKingMoves(p, i, currBoard, currMoveList);
         }
+    }
+    initSquaresUnderAttackByOpponentList(squaresUnderAttackByOpponent, currMoveList);
+}
+
+void ChessBoard::initSquaresUnderAttackByOpponentList(vector<int>&squaresUnderAttackByOpponent, vector<Move>& currMoveList) {
+    int numPossibleMoves = currMoveList.size();
+    for (int i = 0; i < numPossibleMoves; i++) {
+        Move currMove = currMoveList[i];
+        squaresUnderAttackByOpponent.push_back(currMove.end);
     }
 }
 
@@ -630,8 +641,8 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
     string startCoord;
     string endCoord;
     vector<Move> currMoveList;
-
-    generateMoves(currBoard, currColor, currMoveList);
+    vector<int> squaresUnderAttackByOpponent;
+    generateMoves(currBoard, currColor, currMoveList, squaresUnderAttackByOpponent);
     if (currMoveList.size() == 0) {
         cout << "ran out of moves to generate" << endl;
         return 0;
@@ -676,7 +687,6 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             endCoord = numberCoordToLetterCoordMap[currMove.end];
    
             movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
-            // clearMoveList();
             int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN, alpha, beta);
             undoMove(endCoord, startCoord, currBoard, takenPiece);
 
