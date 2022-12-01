@@ -123,7 +123,7 @@ void ChessBoard::getPosition(string currCoord, int* positionArr) {
     positionArr[1] = getColCoord(currCoord[0]);
 }
 
-bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], int currColorTurnLocal) {
+bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], int currColorTurnLocal, Piece &takenPiece) {
     if (!isValidInput(start, end) ) {
             cout << "not a valid move 1" << endl;
             return false;
@@ -147,7 +147,7 @@ bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], int
             currPiece.isAtStartingPosition = false;
         }
         (localBoard)[currPosition[0]][currPosition[1]] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
-
+        takenPiece = (localBoard)[nextPosition[0]][nextPosition[1]];
         (localBoard)[nextPosition[0]][nextPosition[1]] = currPiece;
         return true;
    
@@ -175,6 +175,7 @@ bool ChessBoard::isValidInput(string start, string end) {
     or start[1] > '8' or start[1] < '1'  or
     end[0] > 'h' or end[0] < 'a' 
     or end[1] > '8' or end[1] < '1'  ) {
+            cout << start << " -> " << end << " is not a valid input " << endl;
             return false;
     }
     return true;
@@ -602,7 +603,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     printLocalBoard(localBoard);
     auto start = chrono::high_resolution_clock::now();
     cout << "AI is loading...." << endl;
-    runMinMaxOnBoard(0, 5, bestMove, localBoard, currColorTurnGlobal);
+    runMinMaxOnBoard(0, 6, bestMove, localBoard, currColorTurnGlobal);
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<float> duration = end - start;
     cout << duration.count() << " seconds" << endl;
@@ -634,8 +635,9 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
     Move possibleMovesArrLocal[numPossibleMoves];
     memcpy((void*)possibleMovesArrLocal, &moveList[0], numPossibleMoves * sizeof(Move));
     // making a copy of local board 
-    Piece prevBoard[8][8];
-    memcpy(prevBoard, currBoard, 64 * sizeof(Piece));
+    // Piece prevBoard[8][8];
+    Piece takenPiece;
+    // memcpy(prevBoard, currBoard, 64 * sizeof(Piece));
     if (currColor == WHITE_TURN) {
         int maxValue = INT_MIN;
         int currScore = INT_MIN;
@@ -644,12 +646,13 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             Move currMove = possibleMovesArrLocal[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
-            movePiece(startCoord, endCoord, currBoard, currColor);
+            movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
             clearMoveList();
-            int result = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN);
 
-            currScore = max(currScore, result);
+            currScore = max(currScore, runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN));
+            undoMove(endCoord, startCoord, currBoard, takenPiece);
             if (currScore > maxValue) {
+                // cout << "new max value of " << currScore << " for white has been found. We are at depth " << currDepth << endl;
                 maxValue = currScore;
                 if (currDepth == 0) {
                 bestMove = currMove;
@@ -658,7 +661,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
                 }
             }
             // TODO: this may be very inneficient. try using pointers
-            memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
+            // memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
         }
         return maxValue; 
     }
@@ -674,16 +677,18 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             // Piece (*pointer)[8];
             // pointer = currBoard;
    
-            movePiece(startCoord, endCoord, currBoard, currColor);
+            movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
             clearMoveList();
-            int result = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN);
 
-            currScore = min(currScore, result);
-            memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
+            currScore = min(currScore, runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN));
+            undoMove(endCoord, startCoord, currBoard, takenPiece);
+            // memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
 
             if (currScore < minValue) {
+                // cout << "new min value of " << currScore << " for black has been found " << endl;
                 minValue = currScore;
                 if (currDepth == 0) {
+                     cout << "minValue has been updated for black maxvalue is now " << minValue << ". the best move is now: " << numberCoordToLetterCoordMap[currMove.start] << " -> " <<  numberCoordToLetterCoordMap[currMove.end] << endl;
                     bestMove = currMove;
                 }
             }
@@ -691,6 +696,20 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
         }
         return minValue; 
     }
+}
+
+void ChessBoard::undoMove(string endCoord, string initialCoord, Piece (*localBoard)[8], Piece takenPieceToPutBack) {
+    int endPosition[2];
+    int initialPosition[2];
+    getPosition(endCoord, endPosition);
+    getPosition(initialCoord, initialPosition);
+
+    // get the piece that was moved previously 
+    Piece endPositionPiece = localBoard[endPosition[0]][endPosition[1]];
+    // replace the end position with the piece that was there before moving our piece previously
+    localBoard[endPosition[0]][endPosition[1]] = takenPieceToPutBack;
+    // put our moved piece back to its initial position
+    localBoard[initialPosition[0]][initialPosition[1]] = endPositionPiece;
 }
 
 

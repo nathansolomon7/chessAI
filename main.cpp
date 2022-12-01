@@ -19,6 +19,7 @@ int main() {
     int turn = 1;
     string oponnentMoveArr[2];
     Piece fillerBoard[8][8];
+    Piece pieceTaken;
     // int currPointFiller = 0;
     while (prevMove != "quit" and nextMove != "quit") {
         if (turn % 2 != 0) {
@@ -43,7 +44,7 @@ int main() {
             Board.generateBestMove(oponnentMoveArr);
             cout << "AI moved " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
 
-            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], Board.board, Board.currColorTurnGlobal)) {
+            if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], Board.board, Board.currColorTurnGlobal, pieceTaken)) {
                 break;
             }
             Board.printBoard();
@@ -58,7 +59,7 @@ int main() {
             continue;
         }
         cout << "Your move: " << prevMove << " -> " << nextMove << endl;
-        if (!Board.movePiece(prevMove, nextMove, Board.board, Board.currColorTurnGlobal)) {
+        if (!Board.movePiece(prevMove, nextMove, Board.board, Board.currColorTurnGlobal, pieceTaken)) {
             continue;
         }
         // Board.printBoard();

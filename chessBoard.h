@@ -20,7 +20,7 @@ class ChessBoard {
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
-        bool movePiece(std::string start, std::string end,  Piece (*localBoard)[8], int currColorTurnLocal);
+        bool movePiece(std::string start, std::string end,  Piece (*localBoard)[8], int currColorTurnLocal, Piece& takenPiece);
         void printBoard();
         void generateMoves( Piece (*currBoard)[8], int currColorTurnLocal);
         void printAllMoves();
@@ -50,7 +50,7 @@ class ChessBoard {
         Piece initializePiece(std::string symbol, int value, int color, int pieceType, bool isSlidingPiece, bool isAtStartingPosition);
         bool isValidMove(int prevColor, int nextRow, int nextCol, int currColorTurnLocal, Piece (*localBoard)[8]);
         bool isValidInput(std::string start, std::string end);
-
+        void undoMove(std::string endCoord, std::string initialCoord, Piece (*localBoard)[8], Piece takenPieceToPutBack);
         int evaluateScore(Piece (*localBoard)[8]);
         void generateSlidingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8]);
         void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8],  int currColorLocal);
