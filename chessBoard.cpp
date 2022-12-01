@@ -603,7 +603,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     printLocalBoard(localBoard);
     auto start = chrono::high_resolution_clock::now();
     cout << "AI is loading...." << endl;
-    runMinMaxOnBoard(0, 20, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
+    runMinMaxOnBoard(0, 7, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<float> duration = end - start;
     cout << duration.count() << " seconds" << endl;
@@ -644,7 +644,6 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
     // memcpy(prevBoard, currBoard, 64 * sizeof(Piece));
     if (currColor == WHITE_TURN) {
         int maxValue = INT_MIN;
-        int currScore = INT_MIN;
         for (int i = 0; i < numPossibleMoves; i++) {
             // make the move
             Move currMove = possibleMovesArrLocal[i];
@@ -654,7 +653,14 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             clearMoveList();
             int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN, alpha, beta);
             undoMove(endCoord, startCoord, currBoard, takenPiece);
-            currScore = max(currScore, returnedResult);
+            // currScore = max(currScore, returnedResult);
+            if (returnedResult > maxValue) {
+                 if (currDepth == 0) {
+                    bestMove = currMove;
+                }
+                 maxValue = returnedResult;
+                // cout << "maxValue has been updated for white. minvalue is now " << maxValue << endl;
+            }
 
             if (returnedResult >= beta) {
                 // cout << "returnedResult >= beta" << endl;
@@ -663,14 +669,8 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
 
             alpha = max(returnedResult, alpha);
             
-            if (currScore > maxValue) {
+      
                 // cout << "new max value of " << currScore << " for white has been found. We are at depth " << currDepth << endl;
-                maxValue = currScore;
-                if (currDepth == 0) {
-                bestMove = currMove;
-                cout << "maxValue has been updated for white. the best move is now: " << numberCoordToLetterCoordMap[currMove.start] << " -> " <<  numberCoordToLetterCoordMap[currMove.end] << endl;
-                }
-            }
             // memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
         }
         return maxValue; 
@@ -678,7 +678,6 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
     // make sure that it does not make moves for the gray empty pice
     else {
         int minValue = INT_MAX;
-        int currScore = INT_MAX;
          for (int i = 0; i < numPossibleMoves; i++) {
             // make the move
             Move currMove = possibleMovesArrLocal[i];
@@ -691,7 +690,14 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             clearMoveList();
             int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN, alpha, beta);
             undoMove(endCoord, startCoord, currBoard, takenPiece);
-            currScore = min(currScore, returnedResult);
+
+            if (returnedResult < minValue) {
+                if (currDepth == 0) {
+                    bestMove = currMove;
+                }
+                minValue = returnedResult;
+                // cout << "minValue has been updated for black. minvalue is now " << minValue << endl;
+            }
              if (returnedResult <= alpha) {
                 //  cout << "returnedResult <= alpha" << endl;
                 return minValue;
@@ -700,15 +706,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             beta = min(beta, returnedResult);
             
             // memcpy(currBoard, prevBoard, 64 * sizeof(Piece));
-
-            if (currScore < minValue) {
                 // cout << "new min value of " << currScore << " for black has been found " << endl;
-                minValue = currScore;
-                if (currDepth == 0) {
-                     cout << "minValue has been updated for black. minvalue is now " << minValue << ". the best move is now: " << numberCoordToLetterCoordMap[currMove.start] << " -> " <<  numberCoordToLetterCoordMap[currMove.end] << endl;
-                    bestMove = currMove;
-                }
-            }
         }
     
         return minValue; 
