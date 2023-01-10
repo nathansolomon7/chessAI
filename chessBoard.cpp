@@ -280,44 +280,57 @@ void ChessBoard::findNumSquaresToEdge() {
     
 }
 
-void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, vector<Move>& currMoveList, vector<int>& squaresUnderAttackByOpponent) {
+void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, vector<Move>& AiMoveList) {
     initChessCoordToArrayCoord();
     pair<int, int> currMove;
-    if (isCurrColorIsInCheck()) {
-        // generate a list of moves that would unblock the currcolor or escape the check
-    }
+    // if (isCurrColorIsInCheck()) {
+    //     // generate a list of moves that would unblock the currcolor or escape the check
+    // }
    for (int i = 0; i < 64; i++) {
             currMove = chessCoordToArrayCoord[i];
             Piece p = currBoard[currMove.first][currMove.second];
 
         if (p.color == currColorTurnLocal and p.type == PAWN) {
-            generatePawnMoves(p, i, currBoard, currColorTurnLocal, currMoveList);
+            generatePawnMoves(p, i, currBoard, currColorTurnLocal, AiMoveList);
         }
         if (p.color == currColorTurnLocal and p.isSlidingPiece) {
-            generateSlidingMoves(p, i, currBoard, currMoveList);
+            generateSlidingMoves(p, i, currBoard, AiMoveList);
         }
         if (p.color == currColorTurnLocal and p.type == KNIGHT) {
-            generateKnightMoves(p, i, currBoard, currMoveList);
+            generateKnightMoves(p, i, currBoard, AiMoveList);
         }
         if (p.color == currColorTurnLocal and p.type == KING) {
-            generateKingMoves(p, i, currBoard, currMoveList);
+            generateKingMoves(p, i, currBoard, AiMoveList);
         }
     }
-    initSquaresUnderAttackByOpponentList(squaresUnderAttackByOpponent, currMoveList);
+    // initSquaresUnderAttackByOpponentList(squaresUnderAttackByOpponent, AiMoveList);
 }
 
-void ChessBoard::initSquaresUnderAttackByOpponentList(vector<int>&squaresUnderAttackByOpponent, vector<Move>& currMoveList) {
-    int numPossibleMoves = currMoveList.size();
+// record all squares that the home player has under their control 
+void ChessBoard::initSquaresUnderAttackByPlayerList(vector<Move>& AiMoveList, Piece (*currBoard)[8]) {
+    vector<Move> squaresUnderAttackByPlayer;
+    int numPossibleMoves = AiMoveList.size();
     for (int i = 0; i < numPossibleMoves; i++) {
-        Move currMove = currMoveList[i];
-        squaresUnderAttackByOpponent.push_back(currMove.end);
-    }
+        Move currMove = AiMoveList[i];
+        Piece takenPiece = convertMoveToPiece(currMove, currBoard);
+        
+        }
+        // convert move to piece
+}
+
+Piece ChessBoard::convertMoveToPiece(Move currMove, Piece (*currBoard)[8]) {
+    string endCoord = numberCoordToLetterCoordMap[currMove.end];
+    int endPosition[2];
+    getPosition(endCoord, endPosition);
+    // piece we are trying to take
+    Piece takenPiece = currBoard[endPosition[0]][endPosition[1]];
+    return takenPiece;
 }
 
 void ChessBoard::printAllMoves(){
-    cout << "moveList size: " << moveList.size() << endl;
-    for (size_t i = 0; i < moveList.size(); i++) {
-        Move currMove = moveList[i];
+    cout << "playerMoveList size: " << playerMoveList.size() << endl;
+    for (size_t i = 0; i < playerMoveList.size(); i++) {
+        Move currMove = playerMoveList[i];
         string currMoveStartString = numberCoordToLetterCoordMap[currMove.start];
         string currMoveEndString = numberCoordToLetterCoordMap[currMove.end];
         cout << currMoveStartString << " -> " << currMoveEndString << endl;
@@ -336,7 +349,7 @@ void ChessBoard::initChessCoordToArrayCoord() {
 }
 
 
-void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], vector<Move> &currMoveList) {
+void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], vector<Move> &AiMoveList) {
         // for each direction
         // go through the squares in the current direction
         pair<int, int> targetArrCoords;
@@ -362,7 +375,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare,  
                 struct Move currMove;
                 currMove.start = startingSquare;
                 currMove.end = targetSquare;
-                currMoveList.push_back(currMove);
+                AiMoveList.push_back(currMove);
                 if (pieceOnTargetSquare.color != startingPiece.color and pieceOnTargetSquare.symbol != ".") {
                     // enemy piece
                     break;
@@ -372,7 +385,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare,  
 }
 
 // TODO: fix bug on pawn's possible moves wrapping around board
-void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], int currColorLocal, vector<Move> &currMoveList) {
+void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], int currColorLocal, vector<Move> &AiMoveList) {
     pair<int, int> currCoord;
     currCoord = chessCoordToArrayCoord[startingSquare];
     pair<int, int> northWestCoords;
@@ -420,7 +433,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        currMoveList.push_back(currMove);
+        AiMoveList.push_back(currMove);
     }
     // if we are at starting position and the square two ahead is free
     if(currBoard[twoAheadCoords.first][twoAheadCoords.second].symbol == "." and startingPiece.isAtStartingPosition) {
@@ -428,7 +441,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        currMoveList.push_back(currMove);
+        AiMoveList.push_back(currMove);
     }
 
     // if the square northwest is not free and has an enemy color
@@ -439,7 +452,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        currMoveList.push_back(currMove);
+        AiMoveList.push_back(currMove);
     }
 
     // if the square northeast is not free and has an enemy color
@@ -449,7 +462,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
         struct Move currMove;
         currMove.start = startingSquare;
         currMove.end = targetSquare;
-        currMoveList.push_back(currMove);
+        AiMoveList.push_back(currMove);
     }
 
 
@@ -457,7 +470,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
 }
 
 
-void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], vector<Move> &currMoveList) {
+void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], vector<Move> &AiMoveList) {
 
     // Calculate all squares knight can jump to from current square
 			
@@ -483,7 +496,7 @@ void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare,  P
                     currMove.start = startingSquare;
                     currMove.end = knightJumpSquare;
                     // cout << "pushing a knight move" << endl;
-                    currMoveList.push_back(currMove);
+                    AiMoveList.push_back(currMove);
                 }
                 
             }
@@ -491,7 +504,7 @@ void ChessBoard::generateKnightMoves(Piece startingPiece, int startingSquare,  P
     }
 }
 
-void ChessBoard::generateKingMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], vector<Move> &currMoveList) {
+void ChessBoard::generateKingMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8], vector<Move> &AiMoveList) {
     // TODO: implement check
      pair <int, int> kingArrCoords;
      for (int i = 0; i < 8; i++) {
@@ -502,7 +515,7 @@ void ChessBoard::generateKingMoves(Piece startingPiece, int startingSquare,  Pie
                 Move currMove;
                 currMove.start = startingSquare;
                 currMove.end = kingJumpSquare;
-                currMoveList.push_back(currMove);
+                AiMoveList.push_back(currMove);
             }  
          }
      }
@@ -525,8 +538,8 @@ void ChessBoard::displayMovesForPiece(string currPiece) {
     vector <pair<int, int>> coordsToMarkOnBoard;
     unordered_set<string> setOfMarkedCoords;
     pair<int, int> chessToArrIdx;
-    for (size_t i = 0; i < moveList.size(); i++) {
-        Move currMove = moveList[i];
+    for (size_t i = 0; i < playerMoveList.size(); i++) {
+        Move currMove = playerMoveList[i];
         if (currMove.start == currSquare) {
             // get array coord of piece you need to change color and save to a list
             chessToArrIdx = chessCoordToArrayCoord[currMove.end];
@@ -569,17 +582,17 @@ void ChessBoard::displayMovesForPiece(string currPiece) {
 }
 
 void ChessBoard::clearMoveList() {
-    moveList.clear();
+    playerMoveList.clear();
 }
 
 void ChessBoard::generateRandomOpponentMove(string* movesArr) {
-    int numMoves = (int)moveList.size();
+    int numMoves = (int)playerMoveList.size();
     random_device rd;     // Only used once to initialise (seed) engine
     mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
     uniform_int_distribution<int> uni(0,numMoves); // Guaranteed unbiased
 
     auto randomIdx = uni(rng);
-    Move randomMove = moveList[randomIdx];
+    Move randomMove = playerMoveList[randomIdx];
     // convert chess cooridantes to letter coordinates
     int startSquare = randomMove.start;
     int targetSquare = randomMove.end; 
@@ -615,7 +628,7 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     printLocalBoard(localBoard);
     auto start = chrono::high_resolution_clock::now();
     cout << "AI is loading...." << endl;
-    runMinMaxOnBoard(0, 7, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
+    runMinMaxOnBoard(0, 6, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<float> duration = end - start;
     cout << duration.count() << " seconds" << endl;
@@ -640,22 +653,21 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
 
     string startCoord;
     string endCoord;
-    vector<Move> currMoveList;
-    vector<int> squaresUnderAttackByOpponent;
-    generateMoves(currBoard, currColor, currMoveList, squaresUnderAttackByOpponent);
-    if (currMoveList.size() == 0) {
+    vector<Move> AiMoveList;
+    generateMoves(currBoard, currColor, AiMoveList);
+    if (AiMoveList.size() == 0) {
         cout << "ran out of moves to generate" << endl;
         return 0;
     }
 
-    int numPossibleMoves = currMoveList.size();
+    int numPossibleMoves = AiMoveList.size();
 
     Piece takenPiece;
     if (currColor == WHITE_TURN) {
         int maxValue = INT_MIN;
         for (int i = 0; i < numPossibleMoves; i++) {
             // make the move
-            Move currMove = currMoveList[i];
+            Move currMove = AiMoveList[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
             movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
@@ -682,7 +694,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
         int minValue = INT_MAX;
          for (int i = 0; i < numPossibleMoves; i++) {
             // make the move
-            Move currMove = currMoveList[i];
+            Move currMove = AiMoveList[i];
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
    

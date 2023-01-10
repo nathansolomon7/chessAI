@@ -21,13 +21,13 @@ struct Move {
 class ChessBoard {
     public:
         Piece board[8][8];
-        std::vector<Move> moveList;
+        std::vector<Move> playerMoveList;
         ChessBoard();
         ~ChessBoard();
         void initializeBoard();
         bool movePiece(std::string start, std::string end,  Piece (*localBoard)[8], int currColorTurnLocal, Piece& takenPiece);
         void printBoard();
-        void generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, std::vector<Move> &currMoveList);
+        void generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, std::vector<Move> &AiMoveList);
         void printAllMoves();
         int convertStringInputToChessCoord(std::string currPiece);
         void displayMovesForPiece(std::string currSquare);
@@ -58,10 +58,12 @@ class ChessBoard {
         bool isValidInput(std::string start, std::string end);
         void undoMove(std::string endCoord, std::string initialCoord, Piece (*localBoard)[8], Piece takenPieceToPutBack);
         int evaluateScore(Piece (*localBoard)[8]);
-        void generateSlidingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &currMoveList);
-        void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8],  int currColorLocal, std::vector<Move> &currMoveList);
-        void generateKnightMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &currMoveList);
-        void generateKingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &currMoveList);
+        void generateSlidingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &AiMoveList);
+        void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8],  int currColorLocal, std::vector<Move> &AiMoveList);
+        void generateKnightMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &AiMoveList);
+        void generateKingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &AiMoveList);
+        void initSquaresUnderAttackByPlayerList(std::vector<Move>& AiMoveList, Piece (*currBoard)[8]);
+        Piece convertMoveToPiece(Move currMove, Piece (*currBoard)[8]);
         void initChessCoordToArrayCoord();
         void initNumberCoordToLetterCoord();
         void printLocalBoard(Piece localBoard[8][8]);

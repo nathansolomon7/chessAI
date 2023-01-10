@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -Werror
+CXXFLAGS = -std=c++11 -O2 -Wall -Wextra -Werror
 
 output: main.o chessBoard.o Piece.o
 	$(CXX) $(CXXFLAGS) main.o chessBoard.o Piece.o -o output

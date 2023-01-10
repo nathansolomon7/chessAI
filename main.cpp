@@ -54,7 +54,7 @@ int main() {
         }
        
         if(prevMove != "quit" and nextMove == "options") {
-            Board.generateMoves(Board.board, Board.currColorTurnGlobal, Board.moveList);
+            Board.generateMoves(Board.board, Board.currColorTurnGlobal, Board.playerMoveList);
             Board.displayMovesForPiece(prevMove);
             continue;
         }
