@@ -62,8 +62,11 @@ class ChessBoard {
         void generatePawnMoves(Piece startingPiece, int startingSquare,  Piece (*currBoard)[8],  int currColorLocal, std::vector<Move> &AiMoveList);
         void generateKnightMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &AiMoveList);
         void generateKingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &AiMoveList);
-        void initSquaresUnderAttackByPlayerList(std::vector<Move>& AiMoveList, Piece (*currBoard)[8]);
-        Piece convertMoveToPiece(Move currMove, Piece (*currBoard)[8]);
+        bool isCurrTurnInCheck(std::vector<Move> &squaresUnderAttackByPlayer, Piece (*currBoard)[8], int currColorTurnLocal);
+        void generateMovesToGetOutOfCheck(Piece currBoard[8][8], int currColorTurn, std::vector<Move> &AiMoveList);
+        Piece convertEndMoveToPiece(Move currMove, Piece (*currBoard)[8]);
+        Piece convertStartMoveToPiece(Move currMove, Piece (*currBoard)[8]);
+        std::vector<Move> initsquaresUnderAttackByOpponentList(Piece (*currBoard)[8], int currColorTurnLocal);
         void initChessCoordToArrayCoord();
         void initNumberCoordToLetterCoord();
         void printLocalBoard(Piece localBoard[8][8]);
