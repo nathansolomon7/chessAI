@@ -59,7 +59,7 @@ int main() {
             continue;
         }
         cout << "Your move: " << prevMove << " -> " << nextMove << endl;
-        if (!Board.movePiece(prevMove, nextMove, Board.board, Board.currColorTurnGlobal, pieceTaken)) {
+        if (!Board.isMoveInMoveSet(Board.board, Board.currColorTurnGlobal, Board.playerMoveList, prevMove, nextMove) or !Board.movePiece(prevMove, nextMove, Board.board, Board.currColorTurnGlobal, pieceTaken)) {
             continue;
         }
         // Board.printBoard();

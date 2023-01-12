@@ -9,6 +9,7 @@
 #include <fstream>
 #include <chrono>
 #include <thread>
+#include <unordered_set>
 using namespace std;
 int WHITE_TURN = 0;
 int BLACK_TURN = 1;
@@ -128,7 +129,7 @@ bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], int
             cout << "not a valid move 1" << endl;
             return false;
     }
-
+        // contains the row and col coordinates for the 2d array board
         int currPosition[2];
         int nextPosition[2];
         getPosition(start, currPosition);
@@ -136,6 +137,7 @@ bool ChessBoard::movePiece(string start, string end, Piece (*localBoard)[8], int
         // piece we are trying to move
         Piece currPiece = localBoard[currPosition[0]][currPosition[1]];
         // cout << "piece we are trying to move: " << currPiece.symbol << endl;
+        // create the move list for the player and put it into a hash map
         if(!isValidMove(currPiece.color, nextPosition[0], nextPosition[1], currColorTurnLocal, localBoard)) {
                 cout << "input from " << start << " -> " << end << " is not valid (see below)" << endl;
                 cout << currPiece.symbol << " -> " << localBoard[nextPosition[0]][nextPosition[1]].symbol << endl;
@@ -670,7 +672,9 @@ void ChessBoard::initNumberCoordToLetterCoord() {
         for (char j = 'a'; j <= 'h'; j++) {
             // convert to char
             int rowNum = i + 1;
-             numberCoordToLetterCoordMap[z] = (string(1, j) +  to_string(rowNum));
+             numberCoordToLetterCoordMap[z] = (string(1, j) + to_string(rowNum));
+             cout << (string(1, j) + to_string(rowNum)) << " maps to " << z << endl;
+             letterCoordToNumberCoordMap[(string(1, j) + to_string(rowNum))] = z;
              z++;
         }
     }
@@ -721,14 +725,16 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
         generateMovesToGetOutOfCheck(currBoard, currColor, AiMoveList);
     }
     
-    if (AiMoveList.size() == 0) {
-        cout << "ran out of moves to generate" << endl;
-        return 0;
-    }
     if (AiMoveList.size() == 0 and isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColor)) {
         cout << currColor << " is in checkMate. Game over" << endl;
         return 0;
     }
+
+    if (AiMoveList.size() == 0) {
+        cout << "ran out of moves to generate" << endl;
+        return 0;
+    }
+    
 
     int numPossibleMoves = AiMoveList.size();
 
@@ -801,6 +807,32 @@ void ChessBoard::undoMove(string endCoord, string initialCoord, Piece (*localBoa
     localBoard[endPosition[0]][endPosition[1]] = takenPieceToPutBack;
     // put our moved piece back to its initial position
     localBoard[initialPosition[0]][initialPosition[1]] = endPositionPiece;
+}
+
+bool ChessBoard::isMoveInMoveSet(Piece (*currBoard)[8], int currColorTurnLocal, vector<Move>& playerMoveList, string startCoord, string endCoord) {
+    generateMoves(currBoard, currColorTurnLocal, playerMoveList);
+    // convert the string input into of Type Move
+    // first convert the string input into array coords
+    for (int i = 0; i < 2; i++) {
+        startCoord[i] = tolower(startCoord[i]);
+        endCoord[i] = tolower(endCoord[i]);
+    }
+    int startingAttemptedMove = letterCoordToNumberCoordMap[startCoord];
+    int endingAttemptedMove = letterCoordToNumberCoordMap[endCoord];
+    Move attemptedMove;
+    attemptedMove.start = startingAttemptedMove;
+    attemptedMove.end = endingAttemptedMove;
+    cout << "attempted move start: " << attemptedMove.start << endl;
+    cout << "attempted move end: " << attemptedMove.end << endl;
+     for (int i = 0; i < (int)playerMoveList.size(); i++) {
+        Move currValidMove = playerMoveList[i];
+        if (currValidMove.start == attemptedMove.start and currValidMove.end == attemptedMove.end) {
+            cout << "move is in movelist and is legal" << endl;
+            return true;
+        }
+    }
+    cout << "move is not valid" << endl;
+    return false;
 }
 
 

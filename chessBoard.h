@@ -30,6 +30,7 @@ class ChessBoard {
         void generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, std::vector<Move> &AiMoveList);
         void printAllMoves();
         int convertStringInputToChessCoord(std::string currPiece);
+        bool isMoveInMoveSet(Piece (*currBoard)[8], int currColorTurnLocal, std::vector<Move>& playerMoveList, std::string prevMove, std::string nextMove);
         void displayMovesForPiece(std::string currSquare);
         void clearMoveList();
         void generateRandomOpponentMove(std::string* movesArr);
@@ -82,6 +83,7 @@ class ChessBoard {
         // numSquaresInfo numSquaresToEdgeArr[8][8];
         std::unordered_map <int, numSquaresInfo> numSquaresToEdgeMap;
         std::unordered_map <int, std::string> numberCoordToLetterCoordMap;
+        std::unordered_map <std::string, int> letterCoordToNumberCoordMap;
 };
 
 
