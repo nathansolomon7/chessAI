@@ -337,11 +337,9 @@ bool ChessBoard::isCurrTurnInCheck(vector<Move> &squaresUnderAttackByOpponentLis
         Piece startingPiece = convertStartMoveToPiece(currMove, currBoard);
         Piece targetPiece = convertEndMoveToPiece(currMove, currBoard);
         if (currColorTurnLocal == WHITE_TURN and targetPiece.symbol == WHITE_KING) {
-            // cout << startingPiece.symbol << " -> " << targetPiece.symbol << endl;
             return true;
         }
         if (currColorTurnLocal == BLACK_TURN and targetPiece.symbol == BLACK_KING) {
-            // cout << startingPiece.symbol << " -> " << targetPiece.symbol << endl;
             return true;
         }
     }
@@ -626,25 +624,29 @@ void ChessBoard::clearMoveList() {
     playerMoveList.clear();
 }
 
-// void ChessBoard::generateRandomOpponentMove(string* movesArr) {
-//     int numMoves = (int)playerMoveList.size();
-//     random_device rd;     // Only used once to initialise (seed) engine
-//     mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
-//     uniform_int_distribution<int> uni(0,numMoves); // Guaranteed unbiased
+void ChessBoard::generateRandomMove(string* movesArr, vector<Move> &moveList, Piece (*currBoard)[8]) {
+    // cout << "displaying all moves that can be chosen from at random: " << endl;
+    displayAllMoves(moveList, currBoard);
+    int numMoves = (int)moveList.size();
+    random_device rd;     // Only used once to initialise (seed) engine
+    mt19937 rng(rd());    // Random-number engine used (Mersenne-Twister in this case)
+    uniform_int_distribution<int> uni(0,numMoves - 1); // Guaranteed unbiased
 
-//     auto randomIdx = uni(rng);
-//     Move randomMove = playerMoveList[randomIdx];
-//     // convert chess cooridantes to letter coordinates
-//     int startSquare = randomMove.start;
-//     int targetSquare = randomMove.end; 
-//     string startCoord;
-//     string targetCoord;
-//     startCoord = numberCoordToLetterCoordMap[startSquare];
-//     targetCoord = numberCoordToLetterCoordMap[targetSquare];
-//     cout << startCoord << " -> " << targetCoord << endl;
-//     movesArr[0] = startCoord;
-//     movesArr[1] = targetCoord;
-// }
+    auto randomIdx = uni(rng);
+    // cout << "the numMoves vector size is: " << numMoves << endl;
+    // cout << "the randomIdx is: " << randomIdx << endl;
+    Move randomMove = moveList[randomIdx];
+    // cout << "the randomMove that was chosen is " << randomMove.start << " -> " << randomMove.end << endl; 
+    // convert chess cooridantes to letter coordinates
+    int startSquare = randomMove.start;
+    int targetSquare = randomMove.end; 
+    string startCoord;
+    string targetCoord;
+    startCoord = numberCoordToLetterCoordMap[startSquare];
+    targetCoord = numberCoordToLetterCoordMap[targetSquare];
+    movesArr[0] = startCoord;
+    movesArr[1] = targetCoord;
+}
 
 // this function is like horribly slow but is the easiest way to implement the new move list
 void ChessBoard::generateMovesToGetOutOfCheck(Piece currBoard[8][8], int currColorTurn, vector<Move> &AiMoveList) {
@@ -689,7 +691,7 @@ void ChessBoard::initNumberCoordToLetterCoord() {
 }
 int globalCounter = 0;
 // TODO: fix bug that allows user to move pieces illegally 
-int ChessBoard::generateBestMove(string* oponnentMove) {
+int ChessBoard::generateBestMove(string* oponnentMove, int currTurnNum) {
     
     Move bestMove;
     bestMove.start = 0;
@@ -699,7 +701,7 @@ int ChessBoard::generateBestMove(string* oponnentMove) {
     printLocalBoard(localBoard);
     auto start = chrono::high_resolution_clock::now();
     cout << "AI is loading...." << endl;
-    int gameResult = runMinMaxOnBoard(0, 6, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
+    int gameResult = runMinMaxOnBoard(0, 6, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX, currTurnNum);
 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<float> duration = end - start;
@@ -712,11 +714,11 @@ int ChessBoard::generateBestMove(string* oponnentMove) {
     oponnentMove[1] = endCoord;
 
     if(gameResult == INT_MIN) {
-        cout << "White is in checkmate. AI wins." << endl;
+        cout << "White is in checkmate! AI wins." << endl;
         return -1;
     }
     if(gameResult == INT_MAX) {
-        cout << "Black is in checkmate. You win!" << endl;
+        cout << "Black is in checkmate! You win!" << endl;
         return -1;
     }
     // convert best move start and end to letter coords 
@@ -724,7 +726,7 @@ int ChessBoard::generateBestMove(string* oponnentMove) {
     return 0;
 }
 // white will be maximizing, black will be minimizing
-int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor, int alpha, int beta) {
+int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor, int alpha, int beta, int currTurnNum) {
   
     globalCounter++;
     if (currDepth == maxDepth) {
@@ -779,14 +781,15 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
             movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
-            int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN, alpha, beta);
+            int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN, alpha, beta, currTurnNum);
             undoMove(endCoord, startCoord, currBoard, takenPiece);
             if (returnedResult > maxValue) {
                 // cout << "new returned result: " << returnedResult << endl;
-                 if (currDepth == 0) {
+                if (currDepth == 0) {
                     bestMove = currMove;
+                    randomizeOpeningMove(bestMove, AiMoveList, currTurnNum, currBoard);
                 }
-                 maxValue = returnedResult;
+                maxValue = returnedResult;
             }
 
             if (returnedResult >= beta) {
@@ -796,11 +799,16 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             alpha = max(returnedResult, alpha);
             // cout << "new max value of " << currScore << " for white has been found. We are at depth " << currDepth << endl;
         }
+
         // cout << "maxValue being returned for white: " << maxValue << endl;
         return maxValue; 
     }
     // make sure that it does not make moves for the gray empty pice
     else {
+         if (currDepth == 0) {
+            cout << "moves at depth 0 outside of randomizer function:" << endl;
+            displayAllMoves(AiMoveList, currBoard);
+         }
         if (AiMoveList.size() == 0 and isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColor)) {
             // cout << currColor << " is in checkMate. Game over" << endl;
             return INT_MAX;
@@ -817,21 +825,11 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             // make the move
             Move currMove = AiMoveList[i];
 
-            // pair<int, int> startingSquare;
-            // pair<int, int> endingSquare;
-            // startingSquare = chessCoordToArrayCoord[currMove.start];
-            // endingSquare = chessCoordToArrayCoord[currMove.end];
-            // Piece startingPiece = currBoard[startingSquare.first][startingSquare.second];
-            // Piece endingPiece = currBoard[endingSquare.first][endingSquare.second];
-            // // cout << startingPiece.symbol << " -> " << endingPiece.symbol << endl;
-            // if(endingPiece.symbol == WHITE_KING) {
-            //     cout << "CAPTURING WHITE KING IS BEING CONSIDERED" << endl;
-            // } 
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
    
             movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
-            int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN, alpha, beta);
+            int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN, alpha, beta, currTurnNum);
             // if(returnedResult < -80) {
             //     // cout << "returning from minmax after making move that resulted in point of " << returnedResult << endl;
             // }
@@ -839,17 +837,39 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
 
             if (returnedResult < minValue) {
                 if (currDepth == 0) {
+                    // cout << "best move is now: " << currMove.start << " -> " << currMove.end << endl;
+                    // cout << convertStartMoveToPiece(currMove, currBoard).symbol << " -> " << convertEndMoveToPiece(currMove, currBoard).symbol << endl;
                     bestMove = currMove;
+                    randomizeOpeningMove(bestMove, AiMoveList, currTurnNum, currBoard);
                 }
                 minValue = returnedResult;
             }
              if (returnedResult <= alpha) {
+                // cout << "minValue being returned for black: " << minValue << endl;
                 return minValue;
             }
             beta = min(beta, returnedResult);
         }
+        // cout << "minValue being returned for white: " << minValue << endl;
         // cout << "minValue being returned for black: " << minValue << endl;
         return minValue; 
+    }
+}
+
+void ChessBoard::randomizeOpeningMove(Move &bestMove, vector<Move> &AiMoveList, int currTurnNum, Piece (*currBoard)[8]) {
+    if(bestMove.start == AiMoveList[0].start and bestMove.end == AiMoveList[0].end and currTurnNum <= 10) {
+            string letterMovesArr[2];
+            cout << "generating random move for AI" << endl;
+            generateRandomMove(letterMovesArr, AiMoveList, currBoard);
+            string startCoord = letterMovesArr[0];
+            string endCoord = letterMovesArr[1];
+            int startingRandomMove = letterCoordToNumberCoordMap[startCoord];
+            int endingRandomMove = letterCoordToNumberCoordMap[endCoord];
+            Move randomMove;
+            randomMove.start = startingRandomMove;
+            randomMove.end = endingRandomMove;
+            cout << "bestMove is now the randomized move: " << randomMove.start << " -> " << randomMove.end << endl;
+            bestMove = randomMove;
     }
 }
 

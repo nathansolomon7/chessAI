@@ -34,8 +34,9 @@ class ChessBoard {
         void displayMovesForPiece(std::string currSquare);
         void displayAllMoves(std::vector<Move> &moveList, Piece (*currBoard)[8]);
         void clearMoveList();
-        void generateRandomOpponentMove(std::string* movesArr);
-        int generateBestMove(std::string* oponnentMove);
+        void generateRandomMove(std::string* movesArr, std::vector<Move> &moveList, Piece (*currBoard)[8]);
+        void randomizeOpeningMove(Move &bestMove, std::vector<Move> &AiMoveList, int currTurnNum, Piece (*currBoard)[8]);
+        int generateBestMove(std::string* oponnentMove, int turn);
         bool isPlayerInCheck(Piece (*currBoard)[8], int currColor);
         void generateMovesToGetOutOfCheck(Piece currBoard[8][8], int currColorTurn, std::vector<Move> &AiMoveList);
         int currColorTurnGlobal = 1;
@@ -79,7 +80,7 @@ class ChessBoard {
         int slidingPieceOffestsArr[8] = {8, -8, -1, 1, 7, -7, 9, -9 };
         // int whiteScore = 0;
         // int blackScore = 0;
-        int runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor, int alpha, int beta);
+        int runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor, int alpha, int beta, int currTurnNum);
         // std::unordered_map <string, int> arrayCoordToChessCoord;
         std::unordered_map <int, std::pair<int, int>> chessCoordToArrayCoord;
         // numSquaresInfo numSquaresToEdgeArr[8][8];

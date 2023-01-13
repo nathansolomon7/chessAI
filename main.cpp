@@ -5,6 +5,12 @@
 using namespace std;
 
 int main() {
+    // string test;
+    // size_t unsignedint = 1;
+    // cout << "sizeof unsigned int: " << sizeof(unsignedint) << endl;
+    // cout << "sizeof string: " << sizeof(test) << " and sring length is " << test.size() << endl;
+    // // cout << "sizeof c array in test: " << sizeof(test.c_str()) << endl;
+    
     ChessBoard Board;
     string prevMove = "text";
     string nextMove = "text";
@@ -36,7 +42,7 @@ int main() {
             cout << "black's move: " << endl;
             // Board.generateRandomOpponentMove(oponnentMoveArr);
             bool isCheckmate = false;
-            if(Board.generateBestMove(oponnentMoveArr) == -1) {
+            if(Board.generateBestMove(oponnentMoveArr, turn) == -1) {
                 isCheckmate = true;
             }
             cout << "AI moved " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
@@ -46,6 +52,11 @@ int main() {
             }
             Board.printBoard();
 
+            if(isCheckmate) {
+                cout << "GAME OVER" << endl;
+                return 0;
+            }
+
             if(Board.currColorTurnGlobal == BLACK_TURN) {
                 Board.isPlayerInCheck(Board.board, WHITE_TURN);
             }
@@ -53,9 +64,6 @@ int main() {
                 Board.isPlayerInCheck(Board.board, BLACK_TURN);
             }
 
-            if(isCheckmate) {
-                return 0;
-            }
             
             Board.clearMoveList();
             turn++;
