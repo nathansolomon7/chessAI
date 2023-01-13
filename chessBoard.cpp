@@ -58,12 +58,22 @@ int rowNumtoBoard[9] = {-1, 7, 6, 5, 4, 3, 2, 1, 0};
 }
 
 void ChessBoard::initializeBoard() {
+
+     for (int i = 2; i < 6; i++) {
+        for (int j = 0; j < 8; j++) {
+            board[i][j] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
+        }
+    }
+
     // intialize white pieces
     board[7][0] = initializePiece(WHITE_ROOK, 5, WHITE_TURN, ROOK, true, true);
     board[7][1] = initializePiece(WHITE_KNIGHT, 3, WHITE_TURN, KNIGHT, false, true);
     board[7][2] = initializePiece(WHITE_BISHOP, 3, WHITE_TURN, BISHOP, true, true);
     board[7][3] = initializePiece(WHITE_QUEEN, 9, WHITE_TURN, QUEEN, true, true);
-    board[7][4] = initializePiece(WHITE_KING, 90, WHITE_TURN, KING, false, true);
+
+    board[3][4] = initializePiece(WHITE_KING, 90, WHITE_TURN, KING, false, true);
+    board[7][4] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
+
     board[7][5] = initializePiece(WHITE_BISHOP, 3, WHITE_TURN, BISHOP, true, true);
     board[7][6] = initializePiece(WHITE_KNIGHT, 3, WHITE_TURN, KNIGHT, false, true);
     board[7][7] = initializePiece(WHITE_ROOK, 5, WHITE_TURN, ROOK, true, true);
@@ -95,12 +105,6 @@ void ChessBoard::initializeBoard() {
     board[0][6] = initializePiece(BLACK_KNIGHT, -3, BLACK_TURN, KNIGHT, false, true);
     board[0][7] = initializePiece(BLACK_ROOK, -5, BLACK_TURN, ROOK, true, true);
 
-
-     for (int i = 2; i < 6; i++) {
-        for (int j = 0; j < 8; j++) {
-            board[i][j] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
-        }
-    }
     findNumSquaresToEdge();
     initNumberCoordToLetterCoord();
 }
@@ -309,10 +313,13 @@ void ChessBoard::generateMoves( Piece (*currBoard)[8], int currColorTurnLocal, v
 
 // record all squares that the home player has under their control 
 vector<Move> ChessBoard::initsquaresUnderAttackByOpponentList(Piece (*currBoard)[8], int currColorTurnLocal) {
+
     if (currColorTurnLocal == WHITE_TURN) {
+        // cout << "generating squares under attack by BLACK" << endl;
         currColorTurnLocal = BLACK_TURN;
     }
-    if (currColorTurnLocal == BLACK_TURN) {
+    else {
+        // cout << "generating squares under attack by WHITE" << endl;
         currColorTurnLocal = WHITE_TURN;
     }
 
@@ -643,6 +650,7 @@ void ChessBoard::clearMoveList() {
 void ChessBoard::generateMovesToGetOutOfCheck(Piece currBoard[8][8], int currColorTurn, vector<Move> &AiMoveList) {
 
     vector<Move> moveListToGetOutOfCheck;
+    vector<Move> squaresUnderAttackByOpponentList;
     // loop through current move list and see if the move blocks check
     // if it does, then add to moveListToGetOutOfCheck
     // if it doesnt, then just continue
@@ -655,14 +663,15 @@ void ChessBoard::generateMovesToGetOutOfCheck(Piece currBoard[8][8], int currCol
         string endCoord = numberCoordToLetterCoordMap[currMove.end];
        
         movePiece(startCoord, endCoord, currBoard, currColorTurn, takenPiece);
-
-         vector<Move> squaresUnderAttackByOpponentList = initsquaresUnderAttackByOpponentList(currBoard, currColorTurn);
+        // creating a list of all moves that do not result in a check
+         squaresUnderAttackByOpponentList = initsquaresUnderAttackByOpponentList(currBoard, currColorTurn);
          if (!isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColorTurn)) {
             moveListToGetOutOfCheck.push_back(AiMoveList[i]);
         }
         // undo the move
         undoMove(endCoord, startCoord, currBoard, takenPiece);
     }
+    // cout << "moveListToGetOutOfCheck.size(): " << moveListToGetOutOfCheck.size() << endl;
     AiMoveList = moveListToGetOutOfCheck;
 }
 
@@ -673,7 +682,6 @@ void ChessBoard::initNumberCoordToLetterCoord() {
             // convert to char
             int rowNum = i + 1;
              numberCoordToLetterCoordMap[z] = (string(1, j) + to_string(rowNum));
-             cout << (string(1, j) + to_string(rowNum)) << " maps to " << z << endl;
              letterCoordToNumberCoordMap[(string(1, j) + to_string(rowNum))] = z;
              z++;
         }
@@ -822,17 +830,41 @@ bool ChessBoard::isMoveInMoveSet(Piece (*currBoard)[8], int currColorTurnLocal, 
     Move attemptedMove;
     attemptedMove.start = startingAttemptedMove;
     attemptedMove.end = endingAttemptedMove;
-    cout << "attempted move start: " << attemptedMove.start << endl;
-    cout << "attempted move end: " << attemptedMove.end << endl;
      for (int i = 0; i < (int)playerMoveList.size(); i++) {
         Move currValidMove = playerMoveList[i];
         if (currValidMove.start == attemptedMove.start and currValidMove.end == attemptedMove.end) {
-            cout << "move is in movelist and is legal" << endl;
             return true;
         }
     }
     cout << "move is not valid" << endl;
     return false;
+}
+
+bool ChessBoard::isPlayerInCheck(Piece (*currBoard)[8], int currColor) {
+    // cout << "checking to see if the player is in check: " << endl;
+    // cout << "currColor: " << currColor << endl;
+    vector<Move> squaresUnderAttackByOpponentList = initsquaresUnderAttackByOpponentList(currBoard, currColor);
+    // cout << "displaying all moves the opponent can make:" << endl;
+    // displayAllMoves(squaresUnderAttackByOpponentList, currBoard);
+    if (isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColor)) {
+        cout << "you are in check!" << endl;
+       return true;
+    }
+    return false;
+}
+
+void ChessBoard::displayAllMoves(vector<Move> &moveList, Piece (*currBoard)[8]) {
+    pair<int, int> startingSquare;
+    pair<int, int> endingSquare;
+    // cout << "moveList size: " << moveList.size() << endl;
+    for (int i = 0; i < (int)moveList.size(); i++) {
+        Move currMove = moveList[i];
+        startingSquare = chessCoordToArrayCoord[currMove.start];
+        endingSquare = chessCoordToArrayCoord[currMove.end];
+       Piece startingPiece = currBoard[startingSquare.first][startingSquare.second];
+       Piece endingPiece = currBoard[endingSquare.first][endingSquare.second];
+       cout << startingPiece.symbol << " -> " << endingPiece.symbol << endl;
+    }
 }
 
 

@@ -6,12 +6,6 @@ using namespace std;
 
 int main() {
     ChessBoard Board;
-    // assert(Board.convertStringInputToChessCoord("b1") == 1);
-    // assert(Board.convertStringInputToChessCoord("b2") == 9);
-    // assert(Board.convertStringInputToChessCoord("b3") == 17);
-    // assert(Board.convertStringInputToChessCoord("b4") == 25);
-    // assert(Board.convertStringInputToChessCoord("b5") == 33);
-    // assert(Board.convertStringInputToChessCoord("b6") == 41);
     string prevMove = "text";
     string nextMove = "text";
     Board.initializeBoard();
@@ -48,14 +42,36 @@ int main() {
                 break;
             }
             Board.printBoard();
+
+            if(Board.currColorTurnGlobal == BLACK_TURN) {
+                Board.isPlayerInCheck(Board.board, WHITE_TURN);
+            }
+            else {
+                Board.isPlayerInCheck(Board.board, BLACK_TURN);
+            }
+
             Board.clearMoveList();
             turn++;
             continue;
         }
        
         if(prevMove != "quit" and nextMove == "options") {
-            Board.generateMoves(Board.board, Board.currColorTurnGlobal, Board.playerMoveList);
-            Board.displayMovesForPiece(prevMove);
+            bool isInCheck = false;
+            ///////////////////////////////////
+            // this code is ugly. should make a wrapper function to avoid duplicate code
+             Board.generateMoves(Board.board, Board.currColorTurnGlobal, Board.playerMoveList);
+            if(Board.isPlayerInCheck(Board.board, Board.currColorTurnGlobal)) {
+                isInCheck = true;
+                cout << "player move list size (not accounting for check): " << Board.playerMoveList.size() << endl;
+                Board.generateMovesToGetOutOfCheck(Board.board, Board.currColorTurnGlobal, Board.playerMoveList);
+                cout << "player move list size (accounting for check): " << Board.playerMoveList.size() << endl;
+                cout << "displaying all moves for player to get out of check" << endl;
+                Board.displayAllMoves(Board.playerMoveList, Board.board);
+            }
+            else {
+               Board.displayMovesForPiece(prevMove);
+            }
+            
             continue;
         }
         cout << "Your move: " << prevMove << " -> " << nextMove << endl;

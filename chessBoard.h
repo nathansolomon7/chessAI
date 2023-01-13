@@ -32,9 +32,12 @@ class ChessBoard {
         int convertStringInputToChessCoord(std::string currPiece);
         bool isMoveInMoveSet(Piece (*currBoard)[8], int currColorTurnLocal, std::vector<Move>& playerMoveList, std::string prevMove, std::string nextMove);
         void displayMovesForPiece(std::string currSquare);
+        void displayAllMoves(std::vector<Move> &moveList, Piece (*currBoard)[8]);
         void clearMoveList();
         void generateRandomOpponentMove(std::string* movesArr);
         void generateBestMove(std::string* oponnentMove);
+        bool isPlayerInCheck(Piece (*currBoard)[8], int currColor);
+        void generateMovesToGetOutOfCheck(Piece currBoard[8][8], int currColorTurn, std::vector<Move> &AiMoveList);
         int currColorTurnGlobal = 1;
         struct numSquaresInfo {
             int numNorth;
@@ -64,7 +67,6 @@ class ChessBoard {
         void generateKnightMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &AiMoveList);
         void generateKingMoves(Piece startingPiece, int startingSquare, Piece (*currBoard)[8], std::vector<Move> &AiMoveList);
         bool isCurrTurnInCheck(std::vector<Move> &squaresUnderAttackByPlayer, Piece (*currBoard)[8], int currColorTurnLocal);
-        void generateMovesToGetOutOfCheck(Piece currBoard[8][8], int currColorTurn, std::vector<Move> &AiMoveList);
         Piece convertEndMoveToPiece(Move currMove, Piece (*currBoard)[8]);
         Piece convertStartMoveToPiece(Move currMove, Piece (*currBoard)[8]);
         std::vector<Move> initsquaresUnderAttackByOpponentList(Piece (*currBoard)[8], int currColorTurnLocal);
