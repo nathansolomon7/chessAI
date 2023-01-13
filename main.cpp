@@ -35,7 +35,9 @@ int main() {
         else {
             cout << "black's move: " << endl;
             // Board.generateRandomOpponentMove(oponnentMoveArr);
-            Board.generateBestMove(oponnentMoveArr);
+            if(Board.generateBestMove(oponnentMoveArr) == -1){
+                return 0;
+            }
             cout << "AI moved " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
 
             if (!Board.movePiece(oponnentMoveArr[0], oponnentMoveArr[1], Board.board, Board.currColorTurnGlobal, pieceTaken)) {
@@ -56,21 +58,15 @@ int main() {
         }
        
         if(prevMove != "quit" and nextMove == "options") {
-            bool isInCheck = false;
-            ///////////////////////////////////
-            // this code is ugly. should make a wrapper function to avoid duplicate code
              Board.generateMoves(Board.board, Board.currColorTurnGlobal, Board.playerMoveList);
             if(Board.isPlayerInCheck(Board.board, Board.currColorTurnGlobal)) {
-                isInCheck = true;
-                cout << "player move list size (not accounting for check): " << Board.playerMoveList.size() << endl;
                 Board.generateMovesToGetOutOfCheck(Board.board, Board.currColorTurnGlobal, Board.playerMoveList);
-                cout << "player move list size (accounting for check): " << Board.playerMoveList.size() << endl;
-                cout << "displaying all moves for player to get out of check" << endl;
-                Board.displayAllMoves(Board.playerMoveList, Board.board);
+                // cout << "player move list size (accounting for check): " << Board.playerMoveList.size() << endl;
+                // cout << "displaying all moves for player to get out of check" << endl;
+                // Board.displayAllMoves(Board.playerMoveList, Board.board);
             }
-            else {
-               Board.displayMovesForPiece(prevMove);
-            }
+    
+            Board.displayMovesForPiece(prevMove);
             
             continue;
         }

@@ -71,8 +71,8 @@ void ChessBoard::initializeBoard() {
     board[7][2] = initializePiece(WHITE_BISHOP, 3, WHITE_TURN, BISHOP, true, true);
     board[7][3] = initializePiece(WHITE_QUEEN, 9, WHITE_TURN, QUEEN, true, true);
 
-    board[3][4] = initializePiece(WHITE_KING, 90, WHITE_TURN, KING, false, true);
-    board[7][4] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
+    board[7][4] = initializePiece(WHITE_KING, 90, WHITE_TURN, KING, false, true);
+    // board[7][4] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
 
     board[7][5] = initializePiece(WHITE_BISHOP, 3, WHITE_TURN, BISHOP, true, true);
     board[7][6] = initializePiece(WHITE_KNIGHT, 3, WHITE_TURN, KNIGHT, false, true);
@@ -689,7 +689,7 @@ void ChessBoard::initNumberCoordToLetterCoord() {
 }
 int globalCounter = 0;
 // TODO: fix bug that allows user to move pieces illegally 
-void ChessBoard::generateBestMove(string* oponnentMove) {
+int ChessBoard::generateBestMove(string* oponnentMove) {
     
     Move bestMove;
     bestMove.start = 0;
@@ -699,7 +699,15 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     printLocalBoard(localBoard);
     auto start = chrono::high_resolution_clock::now();
     cout << "AI is loading...." << endl;
-    runMinMaxOnBoard(0, 6, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
+    int gameResult = runMinMaxOnBoard(0, 6, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
+    if(gameResult == INT_MIN) {
+        cout << "White is in checkmate. AI wins." << endl;
+        return -1;
+    }
+    if(gameResult == INT_MAX) {
+        cout << "Black is in checkmate. You win!" << endl;
+        return -1;
+    }
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<float> duration = end - start;
     cout << duration.count() << " seconds" << endl;
@@ -711,15 +719,16 @@ void ChessBoard::generateBestMove(string* oponnentMove) {
     oponnentMove[1] = endCoord;
     // convert best move start and end to letter coords 
     // pass the letter coords into movePiece function
+    return 0;
 }
 // white will be maximizing, black will be minimizing
 int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Piece currBoard[8][8], int currColor, int alpha, int beta) {
   
     globalCounter++;
     if (currDepth == maxDepth) {
-
-            int terminalScore = evaluateScore(currBoard);
-            return terminalScore;
+        int terminalScore = evaluateScore(currBoard);
+        // cout << "terminal score: " << terminalScore << endl;
+        return terminalScore;
     }
 
     string startCoord;
@@ -727,20 +736,19 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
     vector<Move> AiMoveList;
     vector<Move> squaresUnderAttackByOpponentList = initsquaresUnderAttackByOpponentList(currBoard, currColor);
     generateMoves(currBoard, currColor, AiMoveList);
+    // if(currColor == WHITE_TURN) {
+    //     cout << "white's moves are at depth " << currDepth + 1 << "are:" << endl;
+    // }
+    // if (currColor == BLACK_TURN) {
+    //     //  cout << "black's moves at depth " << currDepth + 1 << "are:" << endl;
+    //      displayAllMoves(AiMoveList, currBoard);
+    // }
+    
+    
     if (isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColor)) {
-        // cout << "i am in check. must look for ways out of check" << endl;
+        // cout << currColor << " is in check" << endl;
         // filter the AiMoveList to only have moves that would lead the king out of check
         generateMovesToGetOutOfCheck(currBoard, currColor, AiMoveList);
-    }
-    
-    if (AiMoveList.size() == 0 and isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColor)) {
-        cout << currColor << " is in checkMate. Game over" << endl;
-        return 0;
-    }
-
-    if (AiMoveList.size() == 0) {
-        cout << "ran out of moves to generate" << endl;
-        return 0;
     }
     
 
@@ -748,17 +756,31 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
 
     Piece takenPiece;
     if (currColor == WHITE_TURN) {
+
+         if (AiMoveList.size() == 0 and isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColor)) {
+            // cout << currColor << " is in checkMate. Game over" << endl;
+            return INT_MIN;
+        }
+
+        if (AiMoveList.size() == 0) {
+            cout << "ran out of moves to generate. stalemate" << endl;
+            return 0;
+        }
+
         int maxValue = INT_MIN;
         for (int i = 0; i < numPossibleMoves; i++) {
             // make the move
             // makeMove(Move currMove, currBoard, currColor, takenPiece);
+
             Move currMove = AiMoveList[i];
+         
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
             movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
             int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, BLACK_TURN, alpha, beta);
             undoMove(endCoord, startCoord, currBoard, takenPiece);
             if (returnedResult > maxValue) {
+                // cout << "new returned result: " << returnedResult << endl;
                  if (currDepth == 0) {
                     bestMove = currMove;
                 }
@@ -772,19 +794,45 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             alpha = max(returnedResult, alpha);
             // cout << "new max value of " << currScore << " for white has been found. We are at depth " << currDepth << endl;
         }
+        // cout << "maxValue being returned for white: " << maxValue << endl;
         return maxValue; 
     }
     // make sure that it does not make moves for the gray empty pice
     else {
+        if (AiMoveList.size() == 0 and isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColor)) {
+            // cout << currColor << " is in checkMate. Game over" << endl;
+            return INT_MAX;
+        }
+
+        if (AiMoveList.size() == 0) {
+            cout << "ran out of moves to generate. stalemate" << endl;
+            return 0;
+        }
+
         int minValue = INT_MAX;
+        // cout << "currently at depth " << currDepth + 1 << endl;
          for (int i = 0; i < numPossibleMoves; i++) {
             // make the move
             Move currMove = AiMoveList[i];
+
+            // pair<int, int> startingSquare;
+            // pair<int, int> endingSquare;
+            // startingSquare = chessCoordToArrayCoord[currMove.start];
+            // endingSquare = chessCoordToArrayCoord[currMove.end];
+            // Piece startingPiece = currBoard[startingSquare.first][startingSquare.second];
+            // Piece endingPiece = currBoard[endingSquare.first][endingSquare.second];
+            // // cout << startingPiece.symbol << " -> " << endingPiece.symbol << endl;
+            // if(endingPiece.symbol == WHITE_KING) {
+            //     cout << "CAPTURING WHITE KING IS BEING CONSIDERED" << endl;
+            // } 
             startCoord = numberCoordToLetterCoordMap[currMove.start];
             endCoord = numberCoordToLetterCoordMap[currMove.end];
    
             movePiece(startCoord, endCoord, currBoard, currColor, takenPiece);
             int returnedResult = runMinMaxOnBoard(currDepth + 1, maxDepth, bestMove, currBoard, WHITE_TURN, alpha, beta);
+            // if(returnedResult < -80) {
+            //     // cout << "returning from minmax after making move that resulted in point of " << returnedResult << endl;
+            // }
             undoMove(endCoord, startCoord, currBoard, takenPiece);
 
             if (returnedResult < minValue) {
@@ -798,7 +846,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
             }
             beta = min(beta, returnedResult);
         }
-
+        // cout << "minValue being returned for black: " << minValue << endl;
         return minValue; 
     }
 }
@@ -841,8 +889,6 @@ bool ChessBoard::isMoveInMoveSet(Piece (*currBoard)[8], int currColorTurnLocal, 
 }
 
 bool ChessBoard::isPlayerInCheck(Piece (*currBoard)[8], int currColor) {
-    // cout << "checking to see if the player is in check: " << endl;
-    // cout << "currColor: " << currColor << endl;
     vector<Move> squaresUnderAttackByOpponentList = initsquaresUnderAttackByOpponentList(currBoard, currColor);
     // cout << "displaying all moves the opponent can make:" << endl;
     // displayAllMoves(squaresUnderAttackByOpponentList, currBoard);
@@ -861,8 +907,8 @@ void ChessBoard::displayAllMoves(vector<Move> &moveList, Piece (*currBoard)[8]) 
         Move currMove = moveList[i];
         startingSquare = chessCoordToArrayCoord[currMove.start];
         endingSquare = chessCoordToArrayCoord[currMove.end];
-       Piece startingPiece = currBoard[startingSquare.first][startingSquare.second];
-       Piece endingPiece = currBoard[endingSquare.first][endingSquare.second];
+        Piece startingPiece = currBoard[startingSquare.first][startingSquare.second];
+        Piece endingPiece = currBoard[endingSquare.first][endingSquare.second];
        cout << startingPiece.symbol << " -> " << endingPiece.symbol << endl;
     }
 }

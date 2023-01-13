@@ -35,7 +35,7 @@ class ChessBoard {
         void displayAllMoves(std::vector<Move> &moveList, Piece (*currBoard)[8]);
         void clearMoveList();
         void generateRandomOpponentMove(std::string* movesArr);
-        void generateBestMove(std::string* oponnentMove);
+        int generateBestMove(std::string* oponnentMove);
         bool isPlayerInCheck(Piece (*currBoard)[8], int currColor);
         void generateMovesToGetOutOfCheck(Piece currBoard[8][8], int currColorTurn, std::vector<Move> &AiMoveList);
         int currColorTurnGlobal = 1;
