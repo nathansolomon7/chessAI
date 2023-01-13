@@ -700,14 +700,7 @@ int ChessBoard::generateBestMove(string* oponnentMove) {
     auto start = chrono::high_resolution_clock::now();
     cout << "AI is loading...." << endl;
     int gameResult = runMinMaxOnBoard(0, 6, bestMove, localBoard, currColorTurnGlobal, INT_MIN, INT_MAX);
-    if(gameResult == INT_MIN) {
-        cout << "White is in checkmate. AI wins." << endl;
-        return -1;
-    }
-    if(gameResult == INT_MAX) {
-        cout << "Black is in checkmate. You win!" << endl;
-        return -1;
-    }
+
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<float> duration = end - start;
     cout << duration.count() << " seconds" << endl;
@@ -717,6 +710,15 @@ int ChessBoard::generateBestMove(string* oponnentMove) {
     cout << "num nodes visited (representing num moves given starting board): " << globalCounter << endl;
     oponnentMove[0] = startCoord;
     oponnentMove[1] = endCoord;
+
+    if(gameResult == INT_MIN) {
+        cout << "White is in checkmate. AI wins." << endl;
+        return -1;
+    }
+    if(gameResult == INT_MAX) {
+        cout << "Black is in checkmate. You win!" << endl;
+        return -1;
+    }
     // convert best move start and end to letter coords 
     // pass the letter coords into movePiece function
     return 0;

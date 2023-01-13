@@ -35,8 +35,9 @@ int main() {
         else {
             cout << "black's move: " << endl;
             // Board.generateRandomOpponentMove(oponnentMoveArr);
-            if(Board.generateBestMove(oponnentMoveArr) == -1){
-                return 0;
+            bool isCheckmate = false;
+            if(Board.generateBestMove(oponnentMoveArr) == -1) {
+                isCheckmate = true;
             }
             cout << "AI moved " << oponnentMoveArr[0] << " -> " << oponnentMoveArr[1] << endl;
 
@@ -52,6 +53,10 @@ int main() {
                 Board.isPlayerInCheck(Board.board, BLACK_TURN);
             }
 
+            if(isCheckmate) {
+                return 0;
+            }
+            
             Board.clearMoveList();
             turn++;
             continue;
