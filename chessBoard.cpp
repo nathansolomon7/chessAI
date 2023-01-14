@@ -94,7 +94,9 @@ void ChessBoard::initializeBoard() {
     board[1][4] = initializePiece(BLACK_PAWN, -1, BLACK_TURN, PAWN, false, true);
     board[1][5] = initializePiece(BLACK_PAWN, -1, BLACK_TURN,PAWN, false, true);
     board[1][6] = initializePiece(BLACK_PAWN, -1, BLACK_TURN, PAWN, false, true);
-    board[1][7] = initializePiece(BLACK_PAWN, -1, BLACK_TURN, PAWN, false, true);
+
+    board[5][7] = initializePiece(BLACK_PAWN, -1, BLACK_TURN, PAWN, false, true);
+    board[1][7] = initializePiece(".", 0, GRAY_TURN, EMPTY, false, false);
      // intialize black pieces
     board[0][0] = initializePiece(BLACK_ROOK, -5, BLACK_TURN, ROOK, true, true);
     board[0][1] = initializePiece(BLACK_KNIGHT, -3, BLACK_TURN, KNIGHT, false, true);
@@ -400,6 +402,7 @@ void ChessBoard::generateSlidingMoves(Piece startingPiece, int startingSquare,  
         if (startingPiece.type == ROOK) {
             endDirIdx = 4;
         }
+
         for(int i = startDirIdx; i < endDirIdx; i++) { 
             for(int j = 0; j < numSquaresToEdgeMap[startingSquare].directionsArr[i]; j++) {
                 int targetSquare = startingSquare + slidingPieceOffestsArr[i] * (j + 1);
@@ -446,7 +449,6 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
 
     // looking one ahead
     if(startingSquare + pawnOffsetForward <= 64) {
-   
         oneAheadCoords = chessCoordToArrayCoord[startingSquare + pawnOffsetForward];
     }
     
@@ -484,7 +486,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
     }
 
     // if the square northwest is not free and has an enemy color
-    if(currBoard[northWestCoords.first][northWestCoords.second].symbol != "." and 
+    if(numSquaresToEdgeMap[startingSquare].numSouthWest > 0 and currBoard[northWestCoords.first][northWestCoords.second].symbol != "." and 
         startingPiece.color != currBoard[northWestCoords.first][northWestCoords.second].color) {
 
         targetSquare = startingSquare + pawnOffetNorthWest;
@@ -495,7 +497,7 @@ void ChessBoard::generatePawnMoves(Piece startingPiece, int startingSquare,  Pie
     }
 
     // if the square northeast is not free and has an enemy color
-    if(currBoard[northEastCoords.first][northEastCoords.second].symbol != "." and 
+    if(numSquaresToEdgeMap[startingSquare].numSouthEast > 0 and currBoard[northEastCoords.first][northEastCoords.second].symbol != "." and 
         startingPiece.color != currBoard[northEastCoords.first][northEastCoords.second].color) {
         targetSquare = startingSquare + pawnOffetNorthEast;
         struct Move currMove;
@@ -740,13 +742,6 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
     vector<Move> AiMoveList;
     vector<Move> squaresUnderAttackByOpponentList = initsquaresUnderAttackByOpponentList(currBoard, currColor);
     generateMoves(currBoard, currColor, AiMoveList);
-    // if(currColor == WHITE_TURN) {
-    //     cout << "white's moves are at depth " << currDepth + 1 << "are:" << endl;
-    // }
-    // if (currColor == BLACK_TURN) {
-    //     //  cout << "black's moves at depth " << currDepth + 1 << "are:" << endl;
-    //      displayAllMoves(AiMoveList, currBoard);
-    // }
     
     
     if (isCurrTurnInCheck(squaresUnderAttackByOpponentList, currBoard, currColor)) {
@@ -837,7 +832,7 @@ int ChessBoard::runMinMaxOnBoard(int currDepth, int maxDepth, Move& bestMove, Pi
 
             if (returnedResult < minValue) {
                 if (currDepth == 0) {
-                    // cout << "best move is now: " << currMove.start << " -> " << currMove.end << endl;
+                    cout << "best move is now: " << currMove.start << " -> " << currMove.end << endl;
                     // cout << convertStartMoveToPiece(currMove, currBoard).symbol << " -> " << convertEndMoveToPiece(currMove, currBoard).symbol << endl;
                     bestMove = currMove;
                     randomizeOpeningMove(bestMove, AiMoveList, currTurnNum, currBoard);
